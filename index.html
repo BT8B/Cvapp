@@ -1,0 +1,3930 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Hazırlama Programı</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#1e293b">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="CV">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --accent-dark: #0284c7;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-light: #e2e8f0;
+            --border-color: #334155;
+            --app-bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --danger: #dc2626;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --cv-font: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            --cv-base: 11.2px;
+            --cv-line: 1.42;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--app-bg);
+            color: #334155;
+            font-size: 14px;
+            line-height: 1.4;
+            padding-bottom: calc(64px + var(--safe-bottom));
+        }
+
+        /* ===== ÜST SEKMELER ===== */
+        .app-tabs {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .app-tabs button {
+            flex: 1;
+            padding: 14px 8px;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            min-height: 48px;
+        }
+        .app-tabs button.active {
+            color: var(--accent-dark);
+            border-bottom-color: var(--accent-dark);
+        }
+
+        /* ===== GÖRÜNÜM SWITCH ===== */
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* ===== DÜZENLE – ACCORDION ===== */
+        .editor-wrap {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 12px 10px 20px;
+        }
+        .acc-item {
+            background: var(--card-bg);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .acc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 14px;
+            cursor: pointer;
+            min-height: 48px;
+            user-select: none;
+            font-weight: 600;
+            color: var(--text-main);
+            gap: 8px;
+        }
+        .acc-header:active { background: #f8fafc; }
+        .acc-header .acc-title { flex: 1; min-width: 0; }
+        .acc-header .acc-count {
+            font-size: 12px;
+            font-weight: 500;
+            color: #94a3b8;
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .acc-header .acc-tools {
+            display: flex;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+        .acc-header .acc-tools .btn {
+            padding: 4px 7px;
+            font-size: 12px;
+            min-height: 32px;
+            line-height: 1;
+        }
+        .acc-header .acc-chevron {
+            font-size: 12px;
+            color: #94a3b8;
+            transition: transform 0.2s;
+        }
+        .acc-item.open .acc-chevron { transform: rotate(90deg); }
+        .acc-item.sec-hidden { opacity: 0.5; }
+        .acc-item.sec-hidden > .acc-body { display: none !important; }
+        .acc-body {
+            display: none;
+            padding: 0 14px 14px;
+            border-top: 1px solid #f1f5f9;
+        }
+        .acc-item.open .acc-body { display: block; padding-top: 12px; }
+
+        /* Form elemanları */
+        .form-group { margin-bottom: 12px; }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"],
+        .form-group input[type="date"],
+        .form-group input[type="month"],
+        .form-group input[type="number"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fff;
+            color: #1e293b;
+            min-height: 44px;
+        }
+        .form-group input[type="date"],
+        .form-group input[type="month"] {
+            min-height: 48px;
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(56,189,248,0.2);
+        }
+        .form-row { display: flex; gap: 10px; }
+        .form-row .form-group { flex: 1; }
+
+        .field-with-expand { position: relative; }
+        .field-with-expand textarea { padding-right: 44px; }
+        .btn-expand {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            background: #e2e8f0;
+            color: #334155;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        .btn-expand:active { background: #cbd5e1; }
+
+        .full-editor {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            background: #fff;
+            flex-direction: column;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        .full-editor.open { display: flex; }
+        .full-editor-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+            min-height: 52px;
+        }
+        .full-editor-header .fe-title {
+            flex: 1;
+            font-weight: 600;
+            font-size: 15px;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .full-editor-body {
+            flex: 1;
+            display: flex;
+            padding: 12px;
+            min-height: 0;
+        }
+        .full-editor-body textarea {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 16px;
+            line-height: 1.55;
+            font-family: inherit;
+            resize: none;
+            color: #1e293b;
+        }
+        .full-editor-body textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(56,189,248,0.2);
+        }
+
+        /* Foto */
+        .photo-edit {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .photo-edit img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+            background: #e2e8f0;
+        }
+        .photo-edit .photo-btns { display: flex; flex-direction: column; gap: 6px; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            min-height: 44px;
+            font-family: inherit;
+        }
+        .btn-primary { background: var(--accent-dark); color: #fff; }
+        .btn-primary:active { background: #0369a1; }
+        .btn-secondary { background: #e2e8f0; color: #334155; }
+        .btn-secondary:active { background: #cbd5e1; }
+        .btn-danger { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+        .btn-danger:active { background: #fee2e2; }
+        .btn-sm { padding: 6px 10px; min-height: 36px; font-size: 12px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Kart (deneyim / eğitim) */
+        .card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .list-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .list-row input,
+        .list-row textarea {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            min-height: 40px;
+            font-family: inherit;
+            width: 100%;
+        }
+        .list-row textarea {
+            min-height: 56px;
+            resize: vertical;
+            line-height: 1.4;
+        }
+        .list-row .field-with-expand {
+            flex: 1;
+            min-width: 0;
+        }
+        .list-row .btn-danger {
+            margin-top: 4px;
+        }
+        .field-with-expand input {
+            width: 100%;
+            padding: 10px 12px;
+            padding-right: 44px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            min-height: 44px;
+            font-family: inherit;
+        }
+        .bullet-list { margin-top: 8px; }
+        .bullet-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+            align-items: flex-start;
+        }
+        .bullet-row textarea {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            min-height: 40px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .color-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .color-row label { font-weight: 600; font-size: 13px; min-width: 100px; }
+        .color-row input[type="color"] {
+            width: 48px;
+            height: 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        .section-add {
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        /* Deneyim liste satırı */
+        .exp-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            min-height: 48px;
+        }
+        .exp-list-item:active { background: #f1f5f9; }
+        .exp-list-item .exp-info { flex: 1; min-width: 0; }
+        .exp-list-item .exp-company {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .exp-list-item .exp-role {
+            font-size: 12px;
+            color: #64748b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+        .exp-list-item .exp-arrow { color: #94a3b8; font-size: 16px; }
+        .exp-detail-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        /* ===== ÖNİZLE – CV (A4 oranları, mobilde ölçeklenir) ===== */
+        .preview-wrap {
+            padding: 8px;
+            margin: 0 auto;
+            overflow: auto;
+            display: block;
+            -webkit-overflow-scrolling: touch;
+        }
+        .cv-scale-box { margin: 0 auto; position: relative; }
+        .cv-scale-box .cv-container { margin: 0; transform-origin: top left; }
+        .zoom-bar {
+            position: sticky;
+            top: 48px;
+            z-index: 60;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: rgba(255,255,255,0.96);
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .zoom-bar .btn { min-height: 38px; min-width: 44px; font-size: 16px; padding: 4px 12px; }
+        .zoom-bar .zoom-label { min-width: 52px; text-align: center; font-weight: 600; color: #0284c7; font-size: 14px; }
+        body.pdf-exporting .cv-scale-box { width: 794px !important; height: auto !important; margin: 0 !important; }
+        .cv-container {
+            width: 794px;
+            max-width: 794px;
+            margin: 0 auto;
+            background: #fff;
+            display: flex;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.12);
+            overflow: hidden;
+            font-family: var(--cv-font);
+            font-size: var(--cv-base);
+            line-height: var(--cv-line);
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            min-height: 1120px;
+            border: 0 solid transparent;
+            transform-origin: top center;
+            flex-shrink: 0;
+        }
+        .cv-container.has-frame {
+            border: 1.5px solid var(--cv-frame-color, #cbd5e1);
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.1);
+        }
+
+        /* Sidebar stilleri */
+        .sidebar.style-solid-dark {
+            background: var(--sidebar-bg);
+            color: #fff;
+        }
+        .sidebar.style-solid-light {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .sidebar.style-solid-light h2 {
+            color: var(--accent-dark);
+            border-bottom-color: #cbd5e1;
+        }
+        .sidebar.style-solid-light p,
+        .sidebar.style-solid-light li {
+            color: #334155;
+        }
+        .sidebar.style-top-band {
+            background: #fff;
+            color: #0f172a;
+            border-top: 10px solid var(--sidebar-bg);
+            padding-top: 16px;
+        }
+        .sidebar.style-top-band h2 {
+            color: var(--accent-dark);
+            border-bottom-color: #e2e8f0;
+        }
+        .sidebar.style-top-band p,
+        .sidebar.style-top-band li {
+            color: #334155;
+        }
+        .sidebar.style-accent-line {
+            background: #fff;
+            color: #0f172a;
+            border-left: 5px solid var(--accent-color);
+            box-shadow: inset 0 0 0 1px #e2e8f0;
+        }
+        .sidebar.style-accent-line h2 {
+            color: var(--accent-dark);
+            border-bottom-color: #e2e8f0;
+        }
+        .sidebar.style-accent-line p,
+        .sidebar.style-accent-line li {
+            color: #334155;
+        }
+
+        /* Foto şekilleri */
+        .profile-img.shape-circle { border-radius: 50%; }
+        .profile-img.shape-rounded { border-radius: 12px; }
+        .profile-img.shape-square { border-radius: 2px; }
+        .profile-img.border-accent { border: 3px solid var(--accent-color); }
+        .profile-img.border-white { border: 3px solid #fff; box-shadow: 0 0 0 1px #cbd5e1; }
+        .profile-img.border-none { border: none; box-shadow: none; }
+
+        .header.with-photo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .header.with-photo .header-text { flex: 1; min-width: 0; }
+        .header-photo-wrap {
+            display: none;
+            flex-shrink: 0;
+        }
+        .header-photo-wrap .profile-img {
+            width: 72px;
+            height: 72px;
+        }
+        .cv-container.photo-header .sidebar > .profile-img-container { display: none; }
+        .cv-container.photo-header .header-photo-wrap { display: block; }
+        .cv-container.photo-header .header.with-photo { display: flex; }
+
+        /* Sidebar üst sol */
+        .cv-container.photo-top-left .sidebar > .profile-img-container,
+        .cv-container.photo-sidebar-mid .sidebar > .profile-img-container {
+            justify-content: flex-start;
+            text-align: left;
+            margin-bottom: 14px;
+        }
+        .cv-container.photo-top-left .sidebar > .profile-img-container .profile-img,
+        .cv-container.photo-sidebar-mid .sidebar > .profile-img-container .profile-img {
+            margin: 0;
+        }
+        .sidebar {
+            width: 31%;
+            background: var(--sidebar-bg);
+            color: #fff;
+            padding: 22px 14px 20px;
+            flex-shrink: 0;
+        }
+        .profile-img-container {
+            text-align: center;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .profile-img {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.12);
+            background-color: #475569;
+            display: block;
+            margin: 0 auto;
+            flex-shrink: 0;
+        }
+        .profile-img:not([src]), .profile-img[src=""] {
+            opacity: 0.35;
+        }
+        .sidebar h2 {
+            font-size: 0.95em;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+            margin-top: 14px;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+        .sidebar h2:first-of-type { margin-top: 4px; }
+        .sidebar p, .sidebar li {
+            font-size: 0.88em;
+            color: var(--text-light);
+            margin-bottom: 5px;
+            list-style: none;
+            word-break: break-word;
+            line-height: 1.4;
+            opacity: 0.95;
+        }
+        .sidebar ul { padding-left: 0; }
+        .sidebar li {
+            padding-left: 0;
+            position: relative;
+        }
+        .main-content {
+            width: 69%;
+            padding: 26px 22px 22px;
+            flex-grow: 1;
+            background: #fff;
+        }
+        .header {
+            margin-bottom: 4px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .header h1 {
+            font-size: 1.85em;
+            color: var(--text-main);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            line-height: 1.15;
+        }
+        .header h2 {
+            font-size: 1em;
+            color: var(--accent-dark);
+            font-weight: 600;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .section-title {
+            font-size: 1.05em;
+            text-transform: uppercase;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--accent-dark);
+            padding-bottom: 3px;
+            margin-top: 14px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+        }
+        .summary-text {
+            font-size: 0.95em;
+            color: var(--text-muted);
+            text-align: justify;
+            margin-bottom: 4px;
+            line-height: 1.5;
+        }
+        .experience-item {
+            margin-bottom: 11px;
+            padding-bottom: 2px;
+        }
+        .job-title {
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 1.02em;
+            letter-spacing: 0.01em;
+        }
+        .company-date {
+            font-size: 0.88em;
+            color: #64748b;
+            font-style: normal;
+            font-weight: 500;
+            margin-bottom: 3px;
+            margin-top: 1px;
+        }
+        .job-details {
+            padding-left: 16px;
+            margin-top: 2px;
+        }
+        .job-details li {
+            font-size: 0.92em;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+            list-style: disc;
+            line-height: 1.4;
+        }
+        .job-details li::marker {
+            color: var(--accent-dark);
+        }
+
+        /* ===== ALT BAR ===== */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            gap: 6px;
+            padding: 8px 10px calc(8px + var(--safe-bottom));
+            background: #fff;
+            border-top: 1px solid #e2e8f0;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+        }
+        .bottom-bar .btn { flex: 1; font-size: 12px; padding: 10px 6px; }
+        .status-toast {
+            position: fixed;
+            top: 56px; left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+        .status-toast.show { opacity: 1; }
+        .status-toast.error { background: var(--danger); }
+
+        /* FAB – sidebar başlık ekle */
+        .fab-add {
+            position: fixed;
+            right: 16px;
+            bottom: calc(72px + var(--safe-bottom));
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: #f97316;
+            color: #fff;
+            font-size: 28px;
+            font-weight: 300;
+            line-height: 1;
+            box-shadow: 0 4px 14px rgba(249, 115, 22, 0.45);
+            z-index: 120;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .fab-add:active { transform: scale(0.94); background: #ea580c; }
+        body.view-edit .fab-add { display: flex; }
+        @media print {
+            .fab-add { display: none !important; }
+        }
+
+        .sidebar-sec-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .sidebar-sec-row input[type="text"] {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            min-height: 40px;
+        }
+        .sidebar-sec-row.hidden-sec { opacity: 0.45; }
+        .sidebar-sec-meta {
+            font-size: 10px;
+            color: #94a3b8;
+            width: 100%;
+            margin-top: 2px;
+            padding-left: 2px;
+        }
+        .custom-items-box {
+            width: 100%;
+            margin-top: 6px;
+        }
+        .custom-items-box textarea {
+            width: 100%;
+            min-height: 64px;
+            font-size: 12px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        /* Düzenle alt sekmeler */
+        .edit-subtabs {
+            display: flex;
+            position: sticky;
+            top: 48px;
+            z-index: 40;
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 8px;
+            gap: 4px;
+        }
+        .edit-subtab {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 12px 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            min-height: 44px;
+        }
+        .edit-subtab.active {
+            color: #0284c7;
+            border-bottom-color: #0284c7;
+        }
+        .edit-panel { display: none; }
+        .edit-panel.active { display: block; }
+
+        /* Section modal */
+        .sec-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 280;
+            background: rgba(15, 23, 42, 0.45);
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0;
+        }
+        .sec-modal.open { display: flex; }
+        .sec-modal-card {
+            background: #fff;
+            width: 100%;
+            max-width: 520px;
+            max-height: 88vh;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
+        }
+        .sec-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .sec-modal-body {
+            padding: 14px 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .sec-modal-footer {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px calc(12px + var(--safe-bottom));
+            border-top: 1px solid #e2e8f0;
+        }
+        .sec-modal-footer .btn { flex: 1; }
+        .sm-item-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+            align-items: flex-start;
+        }
+        .sm-item-row .field-with-expand { flex: 1; }
+        .sm-item-row textarea {
+            width: 100%;
+            min-height: 52px;
+            padding: 8px 40px 8px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        body.view-preview .fab-add,
+        body.edit-panel-pro .fab-add,
+        body.edit-panel-appearance .fab-add { display: none !important; }
+        body.view-edit.edit-panel-sidebar .fab-add { display: flex; }
+
+        /* Yazdır – A4 */
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+        @media print {
+            html, body {
+                background: #fff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .zoom-bar, .app-tabs, .bottom-bar, .status-toast, .full-editor, .sec-modal, .fab-add, .edit-subtabs, #editorView { display: none !important; }
+            #previewView { display: block !important; }
+            .preview-wrap { padding: 0 !important; margin: 0 !important; max-width: none !important; overflow: visible !important; display: block !important; }
+            .cv-scale-box { width: auto !important; height: auto !important; margin: 0 !important; }
+            .experience-item { break-inside: avoid; page-break-inside: avoid; }
+            .cv-container {
+                box-shadow: none !important;
+                width: 210mm !important;
+                max-width: 210mm !important;
+                min-height: 296mm !important;
+                margin: 0 !important;
+                transform: none !important;
+                overflow: visible !important;
+            }
+        }
+
+        /* Mobil: A4 oranını koru (ölçek JS ile ayarlanır) — foto/oran PDF ile aynı */
+        @media (max-width: 600px) {
+            .preview-wrap { padding: 6px; }
+        }
+
+        /* PDF export: tek sayfa A4 — önizleme ile aynı oranlar */
+        body.pdf-exporting .cv-container {
+            width: 794px !important;
+            max-width: 794px !important;
+            min-height: 0 !important;
+            height: auto !important;
+            transform: none !important;
+            margin-bottom: 0 !important;
+            box-shadow: none !important;
+        }
+        body.pdf-exporting .profile-img {
+            width: 96px !important;
+            height: 96px !important;
+        }
+        body.pdf-exporting .profile-img-container {
+            margin-bottom: 14px !important;
+            display: flex !important;
+        }
+        /* PDF: ortalı (varsayılan) vs sol üst */
+        body.pdf-exporting .cv-container.photo-top .profile-img-container {
+            justify-content: center !important;
+        }
+        body.pdf-exporting .cv-container.photo-top-left .sidebar > .profile-img-container {
+            justify-content: flex-start !important;
+            text-align: left !important;
+        }
+        body.pdf-exporting .cv-container.photo-top-left .sidebar > .profile-img-container .profile-img {
+            margin: 0 !important;
+        }
+        body.pdf-exporting .preview-wrap {
+            padding: 0 !important;
+            max-width: none !important;
+            display: block !important;
+        }
+        body.pdf-exporting.pdf-compact .cv-container {
+            font-size: 9.4px !important;
+            line-height: 1.28 !important;
+        }
+        body.pdf-exporting.pdf-compact .experience-item { margin-bottom: 4px !important; }
+        body.pdf-exporting.pdf-compact .section-title { margin-top: 6px !important; }
+        body.pdf-exporting.pdf-natural .cv-container {
+            font-size: var(--cv-base) !important;
+            line-height: var(--cv-line) !important;
+        }
+        body.pdf-exporting.pdf-natural .sidebar { padding: 18px 12px !important; }
+        body.pdf-exporting.pdf-natural .main-content { padding: 20px 16px !important; }
+    </style>
+</head>
+<body>
+
+<!-- ÜST SEKMELER -->
+<div class="app-tabs">
+    <button type="button" id="tabEdit" class="active" onclick="switchView('edit')">✏️ Düzenle</button>
+    <button type="button" id="tabPreview" onclick="switchView('preview')">👁️ Önizle</button>
+</div>
+
+<div id="statusToast" class="status-toast"></div>
+
+<!-- ========== DÜZENLE ========== -->
+<div id="editorView" class="view active">
+    <div class="edit-subtabs">
+        <button type="button" class="edit-subtab active" id="subtabPro" onclick="switchEditPanel('pro')">Profesyonel</button>
+        <button type="button" class="edit-subtab" id="subtabSidebar" onclick="switchEditPanel('sidebar')">Sidebar</button>
+        <button type="button" class="edit-subtab" id="subtabAppearance" onclick="switchEditPanel('appearance')">Görünüm</button>
+    </div>
+    <div class="editor-wrap">
+
+        <!-- ===== PROFESYONEL PANEL ===== -->
+        <div id="panelPro" class="edit-panel active">
+
+        <!-- Kişisel (isim / unvan / foto) -->
+        <div class="acc-item" data-section="personal">
+            <div class="acc-header" onclick="toggleAcc(this)">
+                <span class="acc-title">Kimlik & Foto</span>
+                <span class="acc-chevron">▶</span>
+            </div>
+            <div class="acc-body">
+                <div class="photo-edit">
+                    <img id="editPhoto" src="" alt="Foto">
+                    <div class="photo-btns">
+                        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="changePhoto(event)">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('fileInput').click()">Fotoğraf Seç</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="clearPhoto()">Kaldır</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Ad Soyad</label>
+                    <input type="text" id="f_name" data-path="personal.name">
+                </div>
+                <div class="form-group">
+                    <label>Unvan</label>
+                    <input type="text" id="f_title" data-path="personal.title">
+                </div>
+            </div>
+        </div>
+
+        <!-- Özet -->
+        <div class="acc-item" data-section="summary">
+            <div class="acc-header" onclick="toggleAcc(this)">
+                <span class="acc-title">Yönetici Özeti</span>
+                <span class="acc-chevron">▶</span>
+            </div>
+            <div class="acc-body">
+                <div class="form-group">
+                    <label>Özet metin</label>
+                    <div class="field-with-expand">
+                        <textarea id="f_summary" data-path="summary" rows="5"></textarea>
+                        <button type="button" class="btn-expand" title="Tam ekran düzenle" onclick="openFullEditor('Yönetici Özeti', document.getElementById('f_summary'), null)">⛶</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deneyim -->
+        <div class="acc-item" data-section="experience">
+            <div class="acc-header" onclick="toggleAcc(this)">
+                <span class="acc-title">Profesyonel Deneyim</span>
+                <span class="acc-count" id="expCount">0</span>
+                <span class="acc-chevron">▶</span>
+            </div>
+            <div class="acc-body">
+                <div id="editExperienceList"></div>
+                <button type="button" class="btn btn-primary section-add" onclick="addExperience()">+ Deneyim Ekle</button>
+            </div>
+        </div>
+
+        </div><!-- /panelPro -->
+
+        <!-- ===== SIDEBAR PANEL ===== -->
+        <div id="panelSidebar" class="edit-panel">
+
+        <!-- İletişim & kişisel -->
+        <div class="acc-item" data-section="contact" data-sid="contact">
+            <div class="acc-header" onclick="toggleAcc(this)">
+                <span class="acc-title" data-sid-title="contact">İletişim</span>
+                <span class="acc-tools" data-sid-tools="contact"></span>
+                <span class="acc-chevron">▶</span>
+            </div>
+            <div class="acc-body">
+                <div class="form-group">
+                    <label>Konum</label>
+                    <input type="text" id="f_location" data-path="contact.location">
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="tel" id="f_phone" data-path="contact.phone">
+                </div>
+                <div class="form-group">
+                    <label>E-posta</label>
+                    <input type="email" id="f_email" data-path="contact.email">
+                </div>
+                <div class="form-group">
+                    <label>Doğum tarihi</label>
+                    <input type="date" id="f_birthDate">
+                    <div id="ageDisplay" style="margin-top:6px;font-size:13px;color:#0284c7;font-weight:600;"></div>
+                    <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Takvimden seçin; yaş otomatik hesaplanır.</p>
+                </div>
+                </div>
+        </div>
+
+        <!-- Kişisel -->
+        <div class="acc-item" data-sid="personal">
+            <div class="acc-header" onclick="toggleAcc(this)">
+                <span class="acc-title" data-sid-title="personal">Kişisel</span>
+                <span class="acc-tools" data-sid-tools="personal"></span>
+                <span class="acc-chevron">▶</span>
+            </div>
+            <div class="acc-body">
+                <div class="form-group">
+                    <label>Yabancı Dil</label>
+                    <input type="text" id="f_language" data-path="personal.language">
+                </div>
+                <div class="form-group">
+                    <label>Ehliyet</label>
+                    <input type="text" id="f_license" data-path="personal.license">
+                </div>
+                <div class="form-group">
+                    <label>Askerlik</label>
+                    <input type="text" id="f_military" data-path="personal.military">
+                </div>
+            </div>
+        </div>
+
+        <!-- Eğitim -->
+        <div class="acc-item" data-section="education" data-sid="education">
+            <div class="acc-header" onclick="toggleAcc(this)">
+                <span class="acc-title" data-sid-title="education">Eğitim</span>
+                <span class="acc-count" id="eduCount">0</span>
+                <span class="acc-tools" data-sid-tools="education"></span>
+                <span class="acc-chevron">▶</span>
+            </div>
+            <div class="acc-body">
+                <div id="editEducationList"></div>
+                <button type="button" class="btn btn-primary section-add" onclick="addEducation()">+ Eğitim Ekle</button>
+            </div>
+        </div>
+
+        <!-- Yetkinlikler -->
+        <div class="acc-item" data-section="skills" data-sid="skills">
+            <div class="acc-header" onclick="toggleAcc(this)">
+                <span class="acc-title" data-sid-title="skills">Yetkinlikler</span>
+                <span class="acc-count" id="skillsCount">0</span>
+                <span class="acc-tools" data-sid-tools="skills"></span>
+                <span class="acc-chevron">▶</span>
+            </div>
+            <div class="acc-body">
+                <div id="editSkillsList"></div>
+                <button type="button" class="btn btn-primary section-add" onclick="addSkill('skills')">+ Yetkinlik Ekle</button>
+            </div>
+        </div>
+
+        <!-- Sistem -->
+        <div class="acc-item" data-section="systems" data-sid="systems">
+            <div class="acc-header" onclick="toggleAcc(this)">
+                <span class="acc-title" data-sid-title="systems">Sistem Uzmanlığı</span>
+                <span class="acc-count" id="systemsCount">0</span>
+                <span class="acc-tools" data-sid-tools="systems"></span>
+                <span class="acc-chevron">▶</span>
+            </div>
+            <div class="acc-body">
+                <div id="editSystemsList"></div>
+                <button type="button" class="btn btn-primary section-add" onclick="addSkill('systems')">+ Sistem Ekle</button>
+            </div>
+        </div>
+
+        <!-- Teknik -->
+        <div class="acc-item" data-section="technical" data-sid="technical">
+            <div class="acc-header" onclick="toggleAcc(this)">
+                <span class="acc-title" data-sid-title="technical">Teknik Yetkinlikler</span>
+                <span class="acc-count" id="technicalCount">0</span>
+                <span class="acc-tools" data-sid-tools="technical"></span>
+                <span class="acc-chevron">▶</span>
+            </div>
+            <div class="acc-body">
+                <div id="editTechnicalList"></div>
+                <button type="button" class="btn btn-primary section-add" onclick="addSkill('technical')">+ Teknik Ekle</button>
+            </div>
+        </div>
+
+        <!-- Özel sidebar başlıkları (FAB ile) -->
+        <div id="customSidebarAccordions"></div>
+
+        </div><!-- /panelSidebar -->
+
+        <!-- ===== GÖRÜNÜM PANEL ===== -->
+        <div id="panelAppearance" class="edit-panel">
+        <div class="acc-item" data-section="appearance">
+            <div class="acc-header" onclick="toggleAcc(this)">
+                <span class="acc-title">Görünüm Ayarları</span>
+                <span class="acc-chevron">▶</span>
+            </div>
+            <div class="acc-body">
+                <div class="color-row">
+                    <label>Sidebar rengi</label>
+                    <input type="color" id="sidebarColor" value="#1e293b">
+                </div>
+                <div class="color-row">
+                    <label>Vurgu rengi</label>
+                    <input type="color" id="accentColor" value="#38bdf8">
+                </div>
+                <div class="form-group" style="margin-top:10px;">
+                    <label>CV yazı tipi</label>
+                    <select id="fontFamily" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
+                        <option value="Inter">Inter (modern, net)</option>
+                        <option value="Source Sans 3">Source Sans 3 (yumuşak)</option>
+                        <option value="Libre Baskerville">Libre Baskerville (klasik)</option>
+                        <option value="Segoe UI">Sistem (Segoe / sistem)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Yazı boyutu</label>
+                    <select id="fontSize" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
+                        <option value="compact">Sıkı (çok içerik / tek sayfa)</option>
+                        <option value="normal" selected>Normal (önerilen)</option>
+                        <option value="comfortable">Rahat (daha okunaklı)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Sidebar stili</label>
+                    <select id="sidebarStyle" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
+                        <option value="solid-dark">Düz koyu</option>
+                        <option value="solid-light">Düz açık</option>
+                        <option value="top-band">Üst bant</option>
+                        <option value="accent-line">Sol vurgu çizgisi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fotoğraf konumu</label>
+                    <select id="photoPosition" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
+                        <option value="top">Sidebar üst (orta)</option>
+                        <option value="top-left">Sidebar üst (sol)</option>
+                        <option value="header">İsim yanı (sol)</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Foto şekli</label>
+                        <select id="photoShape" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
+                            <option value="circle">Yuvarlak</option>
+                            <option value="rounded">Yuvarlatılmış</option>
+                            <option value="square">Kare</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Foto çerçevesi</label>
+                        <select id="photoBorder" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
+                            <option value="accent">Vurgu rengi</option>
+                            <option value="white">Beyaz</option>
+                            <option value="none">Yok</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Sayfa çerçevesi</label>
+                        <select id="pageFrame" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
+                            <option value="off">Kapalı</option>
+                            <option value="on">Açık (ince)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Çerçeve rengi</label>
+                        <input type="color" id="frameColor" value="#cbd5e1" style="width:100%;height:44px;border:1px solid #e2e8f0;border-radius:8px;padding:4px;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>PDF sığdırma</label>
+                    <select id="pdfFit" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
+                        <option value="fit">Sığdır (tek sayfa, gerekirse küçült)</option>
+                        <option value="natural">Doğal (boşluk kalabilir)</option>
+                        <option value="compact">Sıkı (daha küçük yazı)</option>
+                    </select>
+                </div>
+                <p style="font-size:11px;color:#94a3b8;margin-bottom:10px;">Değişiklikler Önizle’de anında görünür ve kaydedilir.</p>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="resetCV()">↺ Varsayılana Dön</button>
+                <button type="button" class="btn btn-danger btn-sm" style="margin-left:6px" onclick="clearAllData()">🗑 Tüm Veriyi Sil</button>
+            </div>
+        </div>
+
+        <div class="acc-item open" data-section="backup">
+            <div class="acc-header" onclick="toggleAcc(this)">
+                <span class="acc-title">Yedekle / Aktar</span>
+                <span class="acc-chevron">▶</span>
+            </div>
+            <div class="acc-body">
+                <p style="font-size:12px;color:#64748b;margin-bottom:10px;">JSON yedeği tüm CV verisini taşır. <b>📄 PDF</b> butonuyla aldığın PDF'in içine de CV verisi gizlice gömülür, o PDF'i buradan geri yükleyebilirsin. <b>Metin PDF</b>'e veri gömülemez, onu geri yükleyemezsin.</p>
+                <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:6px;">Dışa aktar</label>
+                <button type="button" class="btn btn-secondary" style="width:100%;margin-bottom:8px;" onclick="exportJSON()">💾 JSON yedeği indir</button>
+                <button type="button" class="btn btn-secondary" style="width:100%;margin-bottom:14px;" onclick="downloadPDF()">📄 PDF indir (veri gömülü)</button>
+                <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:6px;">İçe aktar</label>
+                <input type="file" id="importJsonInput" accept=".json,application/json" style="display:none" onchange="importJSONFile(event)">
+                <input type="file" id="importPdfInput" accept=".pdf,application/pdf" style="display:none" onchange="importPDFFile(event)">
+                <button type="button" class="btn btn-secondary" style="width:100%;margin-bottom:8px;" onclick="document.getElementById('importJsonInput').click()">📂 JSON yedeğinden yükle</button>
+                <button type="button" class="btn btn-secondary" style="width:100%;" onclick="document.getElementById('importPdfInput').click()">📂 PDF'ten yükle</button>
+            </div>
+        </div>
+
+        </div><!-- /panelAppearance -->
+
+    </div>
+</div>
+
+<!-- ========== ÖNİZLE ========== -->
+<div id="previewView" class="view">
+    <div class="zoom-bar">
+        <button type="button" class="btn btn-secondary" onclick="zoomPreview(-1)" title="Küçült">−</button>
+        <span class="zoom-label" id="zoomLabel">100%</span>
+        <button type="button" class="btn btn-secondary" onclick="zoomPreview(1)" title="Büyüt">+</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="zoomPreview(0)">Sığdır</button>
+    </div>
+    <div class="preview-wrap">
+        <div class="cv-scale-box" id="cvScaleBox">
+        <div class="cv-container" id="cvContainer">
+            <div class="sidebar style-solid-dark" id="sidebar">
+                <div class="profile-img-container" id="photoSidebarWrap">
+                    <img src="" alt="Fotoğraf" class="profile-img shape-circle border-accent" id="profilePic">
+                </div>
+                <div id="sidebarDynamic"></div>
+            </div>
+            <div class="main-content">
+                <div class="header with-photo" id="cvHeader">
+                    <div class="header-photo-wrap" id="photoHeaderWrap">
+                        <img src="" alt="Fotoğraf" class="profile-img shape-circle border-accent" id="profilePicHeader">
+                    </div>
+                    <div class="header-text">
+                        <h1 id="pv_name"></h1>
+                        <h2 id="pv_title"></h2>
+                    </div>
+                </div>
+                <div class="section-title">Yönetici Özeti</div>
+                <p class="summary-text" id="pv_summary"></p>
+                <div class="section-title">Profesyonel Deneyim</div>
+                <div id="pv_experience"></div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAB: Sidebar başlık ekle -->
+<button type="button" class="fab-add" id="fabAddSection" title="Sidebar başlığı ekle" onclick="openSectionModal()">+</button>
+
+<!-- Yeni sidebar başlık modalı -->
+<div id="sectionModal" class="sec-modal" aria-hidden="true">
+    <div class="sec-modal-card">
+        <div class="sec-modal-header">
+            <strong>Yeni Sidebar Başlığı</strong>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="closeSectionModal()">İptal</button>
+        </div>
+        <div class="sec-modal-body">
+            <div class="form-group">
+                <label>Başlık</label>
+                <div class="field-with-expand">
+                    <input type="text" id="smTitle" placeholder="Örn. Sertifikalar">
+                    <button type="button" class="btn-expand" title="Tam ekran" onclick="openFullEditor('Başlık', document.getElementById('smTitle'), null)">⛶</button>
+                </div>
+            </div>
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:6px;">Maddeler</label>
+            <div id="smItems"></div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addSmItem()" style="margin-top:6px;">+ Madde Ekle</button>
+        </div>
+        <div class="sec-modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeSectionModal()">İptal</button>
+            <button type="button" class="btn btn-primary" onclick="confirmCreateSection()">Oluştur</button>
+        </div>
+    </div>
+</div>
+
+<!-- ALT BAR -->
+<div class="bottom-bar">
+    <button type="button" class="btn btn-secondary" id="undoBtn" onclick="undoCV()" disabled title="Geri" style="flex:0.5">↩</button>
+    <button type="button" class="btn btn-secondary" id="redoBtn" onclick="redoCV()" disabled title="İleri" style="flex:0.5">↪</button>
+    <button type="button" class="btn btn-primary" onclick="saveCV()">💾 Kaydet</button>
+    <button type="button" class="btn btn-primary" id="pdfBtn" onclick="downloadPDF()">📄 PDF</button>
+    <button type="button" class="btn btn-primary" id="textPdfBtn" onclick="printCV()" style="flex:1.3">📝 Metin PDF</button>
+</div>
+
+<!-- TAM EKRAN METİN DÜZENLEYİCİ -->
+<div id="fullEditor" class="full-editor" aria-hidden="true">
+    <div class="full-editor-header">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeFullEditor(false)">İptal</button>
+        <span class="fe-title" id="feTitle">Düzenle</span>
+        <button type="button" class="btn btn-primary btn-sm" onclick="closeFullEditor(true)">Tamam</button>
+    </div>
+    <div class="full-editor-body">
+        <textarea id="feTextarea" placeholder="Metni buraya yazın…"></textarea>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+/* =========================================================
+   CV HAZIRLAMA PROGRAMI – Mimari B (Düzenle + Önizle)
+   localStorage: cv_app_data
+   ========================================================= */
+
+const STORAGE_KEY = 'cv_app_data';
+const MAX_HISTORY = 30;
+
+const defaultData = {
+    personal: {
+        name: 'Ad Soyad',
+        title: 'Unvan',
+        language: 'İngilizce (Orta)',
+        license: 'B Sınıfı',
+        military: ''
+    },
+    contact: {
+        location: '📍 Şehir, İlçe',
+        phone: '📞 +90 (5xx) xxx xx xx',
+        email: '✉️ ornek@eposta.com',
+        birthDate: '',
+        birth: ''
+    },
+    summary: 'Buraya kısa bir özet yazın: kaç yıllık deneyiminiz var, hangi alanda uzmansınız, öne çıkan başarılarınız neler. Bu metin örnektir; Düzenle sekmesinden değiştirin ya da Görünüm > Yedekle / Aktar bölümünden kendi yedeğinizi yükleyin.',
+    photo: '',
+    colors: { sidebar: '#1e293b', accent: '#38bdf8' },
+    typography: { font: 'Inter', size: 'normal' },
+    layout: {
+        sidebarStyle: 'solid-dark',
+        photoPosition: 'top',
+        photoShape: 'circle',
+        photoBorder: 'accent',
+        pageFrame: 'off',
+        frameColor: '#cbd5e1',
+        pdfFit: 'fit'
+    },
+    sidebarSections: [
+        { id: 'contact', title: 'İletişim', type: 'contact', visible: true },
+        { id: 'personal', title: 'Kişisel', type: 'personal', visible: true },
+        { id: 'education', title: 'Eğitim', type: 'education', visible: true },
+        { id: 'skills', title: 'Yetkinlikler', type: 'list', listKey: 'skills', visible: true },
+        { id: 'systems', title: 'Sistem Uzmanlığı', type: 'list', listKey: 'systems', visible: true },
+        { id: 'technical', title: 'Teknik Yetkinlikler', type: 'list', listKey: 'technical', visible: true }
+    ],
+    customSections: {},
+    education: [
+        { school: 'Üniversite Adı', degree: 'Bölüm (Lisans)', startYear: '2010', endYear: '2014', years: '' }
+    ],
+    skills: [
+        'Örnek yetkinlik 1',
+        'Örnek yetkinlik 2',
+        'Örnek yetkinlik 3'
+    ],
+    systems: [
+        'Örnek: sistem veya ürün adı'
+    ],
+    technical: [
+        'Ofis: MS Excel, Word, PowerPoint'
+    ],
+    experience: [
+        {
+            company: 'Şirket Adı',
+            role: 'Pozisyon',
+            startDate: '2020-01',
+            endDate: '',
+            isCurrent: true,
+            roleDate: '',
+            bullets: [
+                'Yaptığınız işi ve somut sonucu yazın (örnek: satışları yüzde 20 artırdım).',
+                'İkinci madde örneği.'
+            ]
+        },
+        {
+            company: 'Önceki Şirket',
+            role: 'Pozisyon',
+            startDate: '2015-03',
+            endDate: '2019-12',
+            isCurrent: false,
+            roleDate: '',
+            bullets: ['Örnek madde.']
+        }
+    ]
+};
+
+let cvData = null;
+let historyStack = [];
+let historyIndex = -1;
+let isRestoring = false;
+let currentView = 'edit';
+let saveTimer = null;
+let activeExpIndex = null; // null = liste, sayı = detay
+let fullEditorTarget = null; // bağlı textarea veya callback
+let fullEditorCallback = null;
+
+/* ---------- Tam ekran metin düzenleyici ---------- */
+function openFullEditor(title, targetEl, callback) {
+    try {
+        var fe = document.getElementById('fullEditor');
+        var ta = document.getElementById('feTextarea');
+        var titleEl = document.getElementById('feTitle');
+        if (!fe || !ta) return;
+        fullEditorTarget = targetEl || null;
+        fullEditorCallback = typeof callback === 'function' ? callback : null;
+        if (titleEl) titleEl.textContent = title || 'Düzenle';
+        var val = '';
+        if (targetEl && typeof targetEl.value === 'string') val = targetEl.value;
+        else if (typeof targetEl === 'string') val = targetEl;
+        ta.value = val;
+        fe.classList.add('open');
+        fe.setAttribute('aria-hidden', 'false');
+        setTimeout(function () {
+            ta.focus();
+            // imleci sona
+            try { ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e2) {}
+        }, 50);
+    } catch (e) {
+        console.error('openFullEditor:', e);
+        showStatus('Tam ekran açılamadı', true);
+    }
+}
+
+function closeFullEditor(save) {
+    try {
+        var fe = document.getElementById('fullEditor');
+        var ta = document.getElementById('feTextarea');
+        if (!fe || !ta) return;
+        if (save) {
+            var val = ta.value;
+            if (fullEditorTarget && typeof fullEditorTarget.value === 'string') {
+                fullEditorTarget.value = val;
+                // change tetikle
+                try {
+                    fullEditorTarget.dispatchEvent(new Event('change', { bubbles: true }));
+                } catch (e2) {}
+            }
+            if (fullEditorCallback) {
+                fullEditorCallback(val);
+            }
+            scheduleSave();
+            showStatus('✓ Metin güncellendi');
+        }
+        fe.classList.remove('open');
+        fe.setAttribute('aria-hidden', 'true');
+        fullEditorTarget = null;
+        fullEditorCallback = null;
+    } catch (e) {
+        console.error('closeFullEditor:', e);
+    }
+}
+
+/* ---------- Yardımcılar ---------- */
+function showStatus(msg, isError) {
+    try {
+        const el = document.getElementById('statusToast');
+        if (!el) return;
+        el.textContent = msg;
+        el.className = 'status-toast show' + (isError ? ' error' : '');
+        setTimeout(function () {
+            el.classList.remove('show');
+        }, 2200);
+    } catch (e) {
+        console.error('showStatus:', e);
+    }
+}
+
+function deepClone(obj) {
+    try {
+        return JSON.parse(JSON.stringify(obj));
+    } catch (e) {
+        console.error('deepClone:', e);
+        return obj;
+    }
+}
+
+function escapeHtml(str) {
+    try {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    } catch (e) {
+        return str || '';
+    }
+}
+
+/* HTML etiketlerini ve entity'leri temizle → düz metin (editör input'ları için) */
+function stripHtml(str) {
+    try {
+        if (!str) return '';
+        var s = String(str);
+        s = s.replace(/<[^>]*>/g, '');
+        s = s.replace(/&amp;/g, '&')
+             .replace(/&lt;/g, '<')
+             .replace(/&gt;/g, '>')
+             .replace(/&quot;/g, '"')
+             .replace(/&#39;/g, "'")
+             .replace(/&nbsp;/g, ' ');
+        return s.trim();
+    } catch (e) {
+        return str || '';
+    }
+}
+
+/* Önizlemede: "Başlık: açıklama" → kalın başlık; eski <strong> varsa yine destekle */
+function safeRich(str) {
+    try {
+        if (!str) return '';
+        var s = String(str);
+        // Eski strong etiketli veri
+        if (/<\/?strong>/i.test(s)) {
+            s = s.replace(/<\/?strong>/gi, function (m) {
+                return m.toLowerCase() === '<strong>' ? '%%S%%' : '%%/S%%';
+            });
+            s = escapeHtml(s);
+            return s.replace(/%%S%%/g, '<strong>').replace(/%%\/S%%/g, '</strong>');
+        }
+        // Düz metin: ilk ":" öncesini kalın yap
+        var plain = stripHtml(s);
+        var colon = plain.indexOf(':');
+        if (colon > 0 && colon < 40) {
+            return '<strong>' + escapeHtml(plain.slice(0, colon + 1)) + '</strong>' +
+                escapeHtml(plain.slice(colon + 1));
+        }
+        return escapeHtml(plain);
+    } catch (e) {
+        return escapeHtml(str);
+    }
+}
+
+/* ---------- Tarih yardımcıları ---------- */
+var TR_MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+var TR_MONTHS_LOWER = TR_MONTHS.map(function (m) { return m.toLowerCase(); });
+
+function parseMonthYear(str) {
+    try {
+        if (!str) return '';
+        str = String(str).trim();
+        // YYYY-MM
+        if (/^\d{4}-\d{2}$/.test(str)) return str;
+        // YYYY
+        if (/^\d{4}$/.test(str)) return str + '-01';
+        // "Ağustos 2025" veya "Agustos 2025"
+        var m = str.match(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s+(\d{4})/i);
+        if (m) {
+            var mi = TR_MONTHS_LOWER.indexOf(m[1].toLowerCase());
+            if (mi >= 0) return m[2] + '-' + String(mi + 1).padStart(2, '0');
+        }
+        // 08.2025 or 08/2025
+        var m2 = str.match(/(\d{1,2})[./](\d{4})/);
+        if (m2) return m2[2] + '-' + String(parseInt(m2[1], 10)).padStart(2, '0');
+        return '';
+    } catch (e) {
+        return '';
+    }
+}
+
+function formatMonthYear(ym) {
+    try {
+        if (!ym) return '';
+        var p = String(ym).split('-');
+        if (p.length < 2) return ym;
+        var year = p[0];
+        var month = parseInt(p[1], 10);
+        if (month >= 1 && month <= 12) return TR_MONTHS[month - 1] + ' ' + year;
+        return year;
+    } catch (e) {
+        return ym || '';
+    }
+}
+
+function calcAge(birthDateStr) {
+    try {
+        if (!birthDateStr) return null;
+        var d = new Date(birthDateStr);
+        if (isNaN(d.getTime())) {
+            // sadece yıl
+            var y = parseInt(birthDateStr, 10);
+            if (!y) return null;
+            d = new Date(y, 0, 1);
+        }
+        var now = new Date();
+        var age = now.getFullYear() - d.getFullYear();
+        var md = now.getMonth() - d.getMonth();
+        if (md < 0 || (md === 0 && now.getDate() < d.getDate())) age--;
+        return age >= 0 && age < 120 ? age : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function calcDurationMonths(startYM, endYM) {
+    try {
+        if (!startYM) return null;
+        var s = String(startYM).split('-');
+        var sy = parseInt(s[0], 10);
+        var sm = parseInt(s[1] || '1', 10);
+        var end = endYM ? String(endYM).split('-') : null;
+        var now = new Date();
+        var ey = end ? parseInt(end[0], 10) : now.getFullYear();
+        var em = end ? parseInt(end[1] || '1', 10) : (now.getMonth() + 1);
+        var months = (ey - sy) * 12 + (em - sm);
+        if (months < 0) months = 0;
+        return months;
+    } catch (e) {
+        return null;
+    }
+}
+
+function formatDuration(months) {
+    try {
+        if (months === null || months === undefined) return '';
+        var y = Math.floor(months / 12);
+        var m = months % 12;
+        if (y > 0 && m > 0) return y + ' Yıl ' + m + ' Ay';
+        if (y > 0) return y + ' Yıl';
+        if (m > 0) return m + ' Ay';
+        return '1 Ay';
+    } catch (e) {
+        return '';
+    }
+}
+
+function buildBirthDisplay(birthDate) {
+    try {
+        if (!birthDate) return '';
+        var year = String(birthDate).slice(0, 4);
+        var age = calcAge(birthDate);
+        if (age !== null) return '📅 ' + year + ' (' + age + ' Yaş)';
+        return '📅 ' + year;
+    } catch (e) {
+        return birthDate || '';
+    }
+}
+
+function buildRoleDateLine(exp) {
+    try {
+        var role = exp.role || '';
+        var start = formatMonthYear(exp.startDate);
+        var end = exp.isCurrent ? 'Devam ediyor' : formatMonthYear(exp.endDate);
+        var dur = formatDuration(calcDurationMonths(exp.startDate, exp.isCurrent ? null : exp.endDate));
+        var range = '';
+        if (start && end) range = start + ' – ' + end;
+        else if (start) range = start;
+        else if (exp.roleDate) return exp.roleDate; // eski format yedek
+        if (range && dur) range += ' (' + dur + ')';
+        if (role && range) return role + ' | ' + range;
+        return role || range || '';
+    } catch (e) {
+        return exp.roleDate || '';
+    }
+}
+
+function buildEducationYears(edu) {
+    try {
+        if (edu.startYear && edu.endYear) {
+            var a = parseInt(edu.startYear, 10);
+            var b = parseInt(edu.endYear, 10);
+            var span = '';
+            if (!isNaN(a) && !isNaN(b) && b >= a) span = ' (' + (b - a) + ' Yıl)';
+            return edu.startYear + ' – ' + edu.endYear + span;
+        }
+        if (edu.years) return edu.years;
+        return '';
+    } catch (e) {
+        return edu.years || '';
+    }
+}
+
+function migrateExperienceItem(exp) {
+    try {
+        if (!exp) return exp;
+        if (exp.role || exp.startDate) return exp; // zaten yeni format
+        if (!exp.roleDate) {
+            exp.role = exp.role || '';
+            exp.startDate = exp.startDate || '';
+            exp.endDate = exp.endDate || '';
+            exp.isCurrent = !!exp.isCurrent;
+            return exp;
+        }
+        var rd = String(exp.roleDate);
+        var parts = rd.split('|');
+        exp.role = (parts[0] || '').trim();
+        var datePart = (parts[1] || '').trim();
+        // "(14 Yıl)" temizle
+        datePart = datePart.replace(/\([^)]*\)/g, '').trim();
+        var range = datePart.split(/–|—|-/);
+        if (range.length >= 2) {
+            exp.startDate = parseMonthYear(range[0].trim());
+            var endRaw = range[1].trim();
+            if (/devam|halen|present|current/i.test(endRaw)) {
+                exp.isCurrent = true;
+                exp.endDate = '';
+            } else {
+                exp.isCurrent = false;
+                exp.endDate = parseMonthYear(endRaw);
+            }
+        } else {
+            exp.startDate = parseMonthYear(datePart) || '';
+            exp.endDate = '';
+            exp.isCurrent = false;
+        }
+        return exp;
+    } catch (e) {
+        console.error('migrateExperienceItem:', e);
+        return exp;
+    }
+}
+
+function migrateEducationItem(edu) {
+    try {
+        if (!edu) return edu;
+        if (edu.startYear || edu.endYear) return edu;
+        if (edu.years) {
+            var m = String(edu.years).match(/(\d{4})\s*[–\-—]\s*(\d{4})/);
+            if (m) {
+                edu.startYear = m[1];
+                edu.endYear = m[2];
+            }
+        }
+        edu.startYear = edu.startYear || '';
+        edu.endYear = edu.endYear || '';
+        return edu;
+    } catch (e) {
+        return edu;
+    }
+}
+
+function refreshComputedFields() {
+    try {
+        if (!cvData) return;
+        // Doğum / yaş
+        cvData.contact.birth = buildBirthDisplay(cvData.contact.birthDate);
+        var ageEl = document.getElementById('ageDisplay');
+        if (ageEl) {
+            var age = calcAge(cvData.contact.birthDate);
+            ageEl.textContent = age !== null ? ('Yaş: ' + age) : (cvData.contact.birthDate ? '' : 'Tarih seçilmedi');
+        }
+        // Deneyim roleDate satırları
+        (cvData.experience || []).forEach(function (exp) {
+            exp.roleDate = buildRoleDateLine(exp);
+        });
+        // Eğitim years
+        (cvData.education || []).forEach(function (edu) {
+            edu.years = buildEducationYears(edu);
+        });
+    } catch (e) {
+        console.error('refreshComputedFields:', e);
+    }
+}
+
+/* Kayıtlı verideki HTML kalıntılarını bir kez temizle */
+function sanitizeStoredData() {
+    try {
+        if (!cvData) return;
+        ['skills', 'systems', 'technical'].forEach(function (type) {
+            if (!cvData[type]) return;
+            cvData[type] = cvData[type].map(function (item) {
+                return stripHtml(item);
+            });
+        });
+        // Doğum: eski "📅 1976 (49 Yaş)" → birthDate
+        if (!cvData.contact.birthDate && cvData.contact.birth) {
+            var by = String(cvData.contact.birth).match(/(19|20)\d{2}/);
+            if (by) cvData.contact.birthDate = by[0] + '-01-01';
+        }
+        (cvData.experience || []).forEach(function (exp, i) {
+            if (exp.bullets) {
+                exp.bullets = exp.bullets.map(function (b) { return stripHtml(b); });
+            }
+            if (exp.company) exp.company = stripHtml(exp.company);
+            cvData.experience[i] = migrateExperienceItem(exp);
+        });
+        (cvData.education || []).forEach(function (edu, i) {
+            cvData.education[i] = migrateEducationItem(edu);
+        });
+        refreshComputedFields();
+    } catch (e) {
+        console.error('sanitizeStoredData:', e);
+    }
+}
+
+/* ---------- Undo / Redo ---------- */
+function updateUndoRedoButtons() {
+    try {
+        var u = document.getElementById('undoBtn');
+        var r = document.getElementById('redoBtn');
+        if (u) u.disabled = historyIndex <= 0;
+        if (r) r.disabled = historyIndex >= historyStack.length - 1;
+    } catch (e) {
+        console.error('updateUndoRedoButtons:', e);
+    }
+}
+
+function pushHistory() {
+    try {
+        if (isRestoring || !cvData) return;
+        var snapshot = deepClone(cvData);
+        if (historyIndex >= 0) {
+            if (JSON.stringify(historyStack[historyIndex]) === JSON.stringify(snapshot)) return;
+        }
+        historyStack = historyStack.slice(0, historyIndex + 1);
+        historyStack.push(snapshot);
+        if (historyStack.length > MAX_HISTORY) historyStack.shift();
+        historyIndex = historyStack.length - 1;
+        updateUndoRedoButtons();
+    } catch (e) {
+        console.error('pushHistory:', e);
+    }
+}
+
+function undoCV() {
+    try {
+        if (historyIndex <= 0) {
+            showStatus('Geri alınacak işlem yok', true);
+            return;
+        }
+        isRestoring = true;
+        historyIndex--;
+        cvData = deepClone(historyStack[historyIndex]);
+        applyToEditor();
+        applyToPreview();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
+        isRestoring = false;
+        updateUndoRedoButtons();
+        showStatus('↩ Geri alındı');
+    } catch (e) {
+        isRestoring = false;
+        console.error('undoCV:', e);
+        showStatus('Geri alma hatası', true);
+    }
+}
+
+function redoCV() {
+    try {
+        if (historyIndex >= historyStack.length - 1) {
+            showStatus('İleri alınacak işlem yok', true);
+            return;
+        }
+        isRestoring = true;
+        historyIndex++;
+        cvData = deepClone(historyStack[historyIndex]);
+        applyToEditor();
+        applyToPreview();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
+        isRestoring = false;
+        updateUndoRedoButtons();
+        showStatus('↪ İleri alındı');
+    } catch (e) {
+        isRestoring = false;
+        console.error('redoCV:', e);
+        showStatus('İleri alma hatası', true);
+    }
+}
+
+/* ---------- Kaydet / Yükle ---------- */
+function collectFromEditor() {
+    try {
+        if (!cvData) return;
+        var map = [
+            ['f_name', 'personal', 'name'],
+            ['f_title', 'personal', 'title'],
+            ['f_language', 'personal', 'language'],
+            ['f_license', 'personal', 'license'],
+            ['f_military', 'personal', 'military'],
+            ['f_location', 'contact', 'location'],
+            ['f_phone', 'contact', 'phone'],
+            ['f_email', 'contact', 'email']
+        ];
+        map.forEach(function (m) {
+            var el = document.getElementById(m[0]);
+            if (el) cvData[m[1]][m[2]] = el.value;
+        });
+        var birthEl = document.getElementById('f_birthDate');
+        if (birthEl) cvData.contact.birthDate = birthEl.value || '';
+
+        var sum = document.getElementById('f_summary');
+        if (sum) cvData.summary = sum.value;
+
+        // Deneyim: sadece detay açıksa o kaydı güncelle
+        if (activeExpIndex !== null && cvData.experience[activeExpIndex]) {
+            var detail = document.getElementById('editExperienceList');
+            if (detail) {
+                var companyEl = detail.querySelector('[data-field="company"]');
+                var roleEl = detail.querySelector('[data-field="role"]');
+                var startEl = detail.querySelector('[data-field="startDate"]');
+                var endEl = detail.querySelector('[data-field="endDate"]');
+                var curEl = detail.querySelector('[data-field="isCurrent"]');
+                var bullets = [];
+                detail.querySelectorAll('[data-field="bullet"]').forEach(function (b) {
+                    if (b.value.trim()) bullets.push(stripHtml(b.value.trim()));
+                });
+                if (companyEl) cvData.experience[activeExpIndex].company = companyEl.value;
+                if (roleEl) cvData.experience[activeExpIndex].role = roleEl.value;
+                if (startEl) cvData.experience[activeExpIndex].startDate = startEl.value;
+                if (endEl) cvData.experience[activeExpIndex].endDate = endEl.value;
+                if (curEl) {
+                    cvData.experience[activeExpIndex].isCurrent = !!curEl.checked;
+                    if (curEl.checked) cvData.experience[activeExpIndex].endDate = '';
+                }
+                cvData.experience[activeExpIndex].bullets = bullets;
+            }
+        }
+
+        // Eğitim
+        var eduCards = document.querySelectorAll('#editEducationList .card');
+        cvData.education = [];
+        eduCards.forEach(function (card) {
+            var school = (card.querySelector('[data-field="school"]') || {}).value || '';
+            var degree = (card.querySelector('[data-field="degree"]') || {}).value || '';
+            var startYear = (card.querySelector('[data-field="startYear"]') || {}).value || '';
+            var endYear = (card.querySelector('[data-field="endYear"]') || {}).value || '';
+            if (school || degree || startYear || endYear) {
+                cvData.education.push({
+                    school: school,
+                    degree: degree,
+                    startYear: startYear,
+                    endYear: endYear,
+                    years: ''
+                });
+            }
+        });
+
+        refreshComputedFields();
+
+        // Listeler (düz metin, HTML yok)
+        ['skills', 'systems', 'technical'].forEach(function (type) {
+            var rows = document.querySelectorAll('#edit' + capitalize(type) + 'List [data-field="item"]');
+            cvData[type] = [];
+            rows.forEach(function (inp) {
+                var v = stripHtml(inp.value.trim());
+                if (v) cvData[type].push(v);
+            });
+        });
+
+        collectSidebarSectionsFromForm();
+    } catch (e) {
+        console.error('collectFromEditor:', e);
+    }
+}
+
+function capitalize(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function saveCV(skipHistory) {
+    try {
+        collectFromEditor();
+        if (!skipHistory) pushHistory();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
+        // Sayaçları güncelle
+        updateCounts();
+        showStatus('✓ Kaydedildi');
+    } catch (e) {
+        console.error('saveCV:', e);
+        showStatus('Kayıt hatası', true);
+    }
+}
+
+function scheduleSave() {
+    try {
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(function () {
+            saveCV();
+        }, 400);
+    } catch (e) {
+        console.error('scheduleSave:', e);
+    }
+}
+
+function loadCV() {
+    try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            var parsed = JSON.parse(raw);
+            cvData = deepClone(defaultData);
+            // sığ merge
+            Object.keys(parsed).forEach(function (k) {
+                if (parsed[k] !== undefined) cvData[k] = parsed[k];
+            });
+        } else {
+            cvData = deepClone(defaultData);
+        }
+        sanitizeStoredData();
+        applyToEditor();
+        applyToPreview();
+        historyStack = [deepClone(cvData)];
+        historyIndex = 0;
+        updateUndoRedoButtons();
+        showStatus('Veri yüklendi');
+    } catch (e) {
+        console.error('loadCV:', e);
+        cvData = deepClone(defaultData);
+        sanitizeStoredData();
+        applyToEditor();
+        applyToPreview();
+        historyStack = [deepClone(cvData)];
+        historyIndex = 0;
+        updateUndoRedoButtons();
+        showStatus('Yükleme hatası, varsayılan açıldı', true);
+    }
+}
+
+function resetCV() {
+    try {
+        if (!confirm('Tüm değişiklikler silinip varsayılan CV yüklenecek. Emin misiniz?')) return;
+        pushHistory();
+        cvData = deepClone(defaultData);
+        applyToEditor();
+        applyToPreview();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
+        pushHistory();
+        showStatus('Varsayılana dönüldü');
+    } catch (e) {
+        console.error('resetCV:', e);
+        showStatus('Sıfırlama hatası', true);
+    }
+}
+
+function clearAllData() {
+    try {
+        if (!confirm('localStorage tamamen temizlenecek. Emin misiniz?')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        cvData = deepClone(defaultData);
+        applyToEditor();
+        applyToPreview();
+        historyStack = [deepClone(cvData)];
+        historyIndex = 0;
+        updateUndoRedoButtons();
+        showStatus('Veri temizlendi');
+    } catch (e) {
+        console.error('clearAllData:', e);
+        showStatus('Temizleme hatası', true);
+    }
+}
+
+/* ---------- Görünüm geçişi ---------- */
+var previewZoom = 1;
+
+function fitPreviewToScreen() {
+    try {
+        var wrap = document.querySelector('.preview-wrap');
+        var cv = document.getElementById('cvContainer');
+        var box = document.getElementById('cvScaleBox');
+        if (!wrap || !cv || !box) return;
+        if (document.body.classList.contains('pdf-exporting')) {
+            cv.style.transform = 'none';
+            return;
+        }
+        cv.style.transform = 'none';
+        var avail = Math.max(280, wrap.clientWidth - 16);
+        var fit = Math.min(1, avail / 794);
+        var scale = fit * previewZoom;
+        cv.style.transform = 'scale(' + scale + ')';
+        box.style.width = (794 * scale) + 'px';
+        box.style.height = (cv.offsetHeight * scale) + 'px';
+        var lbl = document.getElementById('zoomLabel');
+        if (lbl) lbl.textContent = Math.round(scale * 100) + '%';
+    } catch (e) {
+        console.error('fitPreviewToScreen:', e);
+    }
+}
+
+function zoomPreview(dir) {
+    try {
+        if (dir === 0) previewZoom = 1;
+        else previewZoom = Math.max(0.6, Math.min(3, previewZoom * (dir > 0 ? 1.25 : 0.8)));
+        fitPreviewToScreen();
+    } catch (e) {
+        console.error('zoomPreview:', e);
+    }
+}
+
+function switchView(view) {
+    try {
+        currentView = view;
+        var edit = document.getElementById('editorView');
+        var prev = document.getElementById('previewView');
+        var tabE = document.getElementById('tabEdit');
+        var tabP = document.getElementById('tabPreview');
+        if (!edit || !prev) return;
+
+        if (view === 'edit') {
+            edit.classList.add('active');
+            prev.classList.remove('active');
+            if (tabE) tabE.classList.add('active');
+            if (tabP) tabP.classList.remove('active');
+            document.body.classList.add('view-edit');
+            document.body.classList.remove('view-preview');
+            if (!document.body.classList.contains('edit-panel-sidebar') &&
+                !document.body.classList.contains('edit-panel-appearance')) {
+                document.body.classList.add('edit-panel-pro');
+            }
+        } else {
+            collectFromEditor();
+            collectSidebarSectionsFromForm();
+            applyToPreview();
+            edit.classList.remove('active');
+            prev.classList.add('active');
+            if (tabE) tabE.classList.remove('active');
+            if (tabP) tabP.classList.add('active');
+            document.body.classList.remove('view-edit');
+            document.body.classList.add('view-preview');
+            setTimeout(fitPreviewToScreen, 50);
+            setTimeout(fitPreviewToScreen, 200);
+        }
+    } catch (e) {
+        console.error('switchView:', e);
+    }
+}
+
+/* ---------- Yedek: dışa / içe aktarma ---------- */
+function backupBaseName() {
+    try {
+        var n = (cvData && cvData.personal && cvData.personal.name) ? String(cvData.personal.name).trim().replace(/\s+/g, '_') : 'CV';
+        return n || 'CV';
+    } catch (e) { return 'CV'; }
+}
+
+function cvToBase64() {
+    collectFromEditor();
+    refreshComputedFields();
+    var json = JSON.stringify(cvData);
+    return btoa(unescape(encodeURIComponent(json)));
+}
+
+function saveBlobWithPicker(blob, filename, description, mime, ext) {
+    return new Promise(function (resolve) {
+        try {
+            if (window.showSaveFilePicker) {
+                var accept = {};
+                accept[mime] = [ext];
+                window.showSaveFilePicker({
+                    suggestedName: filename,
+                    types: [{ description: description, accept: accept }]
+                }).then(function (handle) {
+                    return handle.createWritable().then(function (writable) {
+                        return writable.write(blob).then(function () { return writable.close(); });
+                    });
+                }).then(function () {
+                    resolve('picker');
+                }).catch(function (err) {
+                    if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) {
+                        resolve('cancelled');
+                        return;
+                    }
+                    fallbackDownloadBlob(blob, filename);
+                    resolve('fallback');
+                });
+            } else {
+                fallbackDownloadBlob(blob, filename);
+                resolve('fallback');
+            }
+        } catch (e) {
+            console.error('saveBlobWithPicker:', e);
+            try { fallbackDownloadBlob(blob, filename); resolve('fallback'); } catch (e2) { resolve('error'); }
+        }
+    });
+}
+
+function exportJSON() {
+    try {
+        collectFromEditor();
+        refreshComputedFields();
+        var blob = new Blob([JSON.stringify(cvData, null, 2)], { type: 'application/json' });
+        saveBlobWithPicker(blob, backupBaseName() + '_CV_yedek.json', 'CV yedeği (JSON)', 'application/json', '.json').then(function (mode) {
+            if (mode === 'cancelled') showStatus('Kayıt iptal edildi', true);
+            else if (mode === 'picker') showStatus('✓ JSON yedeği kaydedildi (konum seçildi)');
+            else if (mode === 'error') showStatus('Yedek alınamadı', true);
+            else showStatus('✓ JSON yedeği indirildi');
+        });
+    } catch (e) {
+        console.error('exportJSON:', e);
+        showStatus('Yedek alınamadı', true);
+    }
+}
+
+function applyImportedData(obj) {
+    try {
+        if (!obj || typeof obj !== 'object' || !obj.personal || !Array.isArray(obj.experience)) {
+            showStatus('Geçerli bir CV yedeği değil', true);
+            return false;
+        }
+        if (!confirm('Mevcut CV bu yedekle değiştirilecek. Emin misiniz?')) return false;
+        collectFromEditor();
+        pushHistory();
+        var merged = deepClone(defaultData);
+        Object.keys(obj).forEach(function (k) {
+            if (obj[k] !== undefined) merged[k] = obj[k];
+        });
+        cvData = merged;
+        activeExpIndex = null;
+        sanitizeStoredData();
+        applyToEditor();
+        applyToPreview();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
+        pushHistory();
+        showStatus('✓ Yedek yüklendi');
+        return true;
+    } catch (e) {
+        console.error('applyImportedData:', e);
+        showStatus('Yükleme hatası', true);
+        return false;
+    }
+}
+
+function importJSONFile(ev) {
+    try {
+        var input = ev.target;
+        var file = input.files && input.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+            try {
+                applyImportedData(JSON.parse(reader.result));
+            } catch (e) {
+                console.error('importJSONFile:', e);
+                showStatus('JSON okunamadı', true);
+            }
+            input.value = '';
+        };
+        reader.onerror = function () { showStatus('Dosya okunamadı', true); input.value = ''; };
+        reader.readAsText(file, 'utf-8');
+    } catch (e) {
+        console.error('importJSONFile:', e);
+    }
+}
+
+function importPDFFile(ev) {
+    try {
+        var input = ev.target;
+        var file = input.files && input.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+            try {
+                var text = new TextDecoder('latin1').decode(new Uint8Array(reader.result));
+                var m = text.match(/CVDATA1:([A-Za-z0-9+\/=]+)/);
+                if (!m) {
+                    showStatus('Bu PDF içinde CV verisi yok (yalnızca 📄 PDF ile alınanlar geri yüklenir)', true);
+                } else {
+                    var json = decodeURIComponent(escape(atob(m[1])));
+                    applyImportedData(JSON.parse(json));
+                }
+            } catch (e) {
+                console.error('importPDFFile:', e);
+                showStatus('PDF içindeki veri okunamadı', true);
+            }
+            input.value = '';
+        };
+        reader.onerror = function () { showStatus('Dosya okunamadı', true); input.value = ''; };
+        reader.readAsArrayBuffer(file);
+    } catch (e) {
+        console.error('importPDFFile:', e);
+    }
+}
+
+var printRestoreBound = false;
+
+function restoreAfterPrint() {
+    try {
+        if (window.__cvOldTitle) { document.title = window.__cvOldTitle; window.__cvOldTitle = ''; }
+        if (cvData && cvData.typography) applyTypography(cvData.typography.font, cvData.typography.size);
+        fitPreviewToScreen();
+    } catch (e) {
+        console.error('restoreAfterPrint:', e);
+    }
+}
+
+function printCV() {
+    try {
+        collectFromEditor();
+        applyToPreview();
+        switchView('preview');
+        if (!printRestoreBound) {
+            window.addEventListener('afterprint', restoreAfterPrint);
+            printRestoreBound = true;
+        }
+        setTimeout(function () {
+            try {
+                var cv = document.getElementById('cvContainer');
+                var fitMode = (cvData.layout && cvData.layout.pdfFit) || 'fit';
+                if (cv && fitMode !== 'natural') {
+                    // Tek A4 sayfaya sığana kadar yazıyı kademeli küçült
+                    cv.style.transform = 'none';
+                    var root = document.documentElement;
+                    var cur = parseFloat(getComputedStyle(root).getPropertyValue('--cv-base')) || 11.2;
+                    var oldMin = cv.style.minHeight;
+                    cv.style.minHeight = '0px';
+                    var guard = 0;
+                    while (cv.offsetHeight > 1115 && cur > 8.5 && guard++ < 40) {
+                        cur -= 0.2;
+                        root.style.setProperty('--cv-base', cur.toFixed(1) + 'px');
+                    }
+                    cv.style.minHeight = oldMin;
+                }
+            } catch (e2) {
+                console.error('printCV fit:', e2);
+            }
+            window.__cvOldTitle = document.title;
+            document.title = backupBaseName() + '_CV';
+            window.print();
+        }, 200);
+    } catch (e) {
+        console.error('printCV:', e);
+        showStatus('Yazdırma hatası', true);
+    }
+}
+
+function resetPdfButton() {
+    try {
+        document.body.classList.remove('pdf-exporting', 'pdf-compact', 'pdf-natural', 'pdf-fit');
+        var btn = document.getElementById('pdfBtn');
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = '📄 PDF';
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function savePdfBlob(blob, filename) {
+    return new Promise(function (resolve, reject) {
+        try {
+            // Destekleyen tarayıcılarda kayıt yeri seçtir
+            if (window.showSaveFilePicker) {
+                window.showSaveFilePicker({
+                    suggestedName: filename,
+                    types: [{
+                        description: 'PDF dosyası',
+                        accept: { 'application/pdf': ['.pdf'] }
+                    }]
+                }).then(function (handle) {
+                    return handle.createWritable().then(function (writable) {
+                        return writable.write(blob).then(function () {
+                            return writable.close();
+                        });
+                    });
+                }).then(function () {
+                    resolve('picker');
+                }).catch(function (err) {
+                    // Kullanıcı iptal ettiyse sessiz çık
+                    if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) {
+                        resolve('cancelled');
+                        return;
+                    }
+                    // Picker yok / hata → klasik indirme
+                    fallbackDownloadBlob(blob, filename);
+                    resolve('fallback');
+                });
+            } else {
+                fallbackDownloadBlob(blob, filename);
+                resolve('fallback');
+            }
+        } catch (e) {
+            try {
+                fallbackDownloadBlob(blob, filename);
+                resolve('fallback');
+            } catch (e2) {
+                reject(e2);
+            }
+        }
+    });
+}
+
+function fallbackDownloadBlob(blob, filename) {
+    try {
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 1500);
+    } catch (e) {
+        console.error('fallbackDownloadBlob:', e);
+        throw e;
+    }
+}
+
+function downloadPDF() {
+    try {
+        if (typeof html2canvas === 'undefined' || (!(window.jspdf && window.jspdf.jsPDF) && typeof window.jsPDF === 'undefined')) {
+            showStatus('PDF kütüphanesi yüklenemedi, yazdırma açılıyor…', true);
+            printCV();
+            return;
+        }
+        collectFromEditor();
+        applyToPreview();
+        switchView('preview');
+
+        var btn = document.getElementById('pdfBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = '…';
+        }
+        showStatus('PDF hazırlanıyor…');
+        ensureLayoutDefaults();
+        var fitMode = (cvData.layout && cvData.layout.pdfFit) || 'fit';
+        document.body.classList.add('pdf-exporting');
+        document.body.classList.remove('pdf-compact', 'pdf-natural', 'pdf-fit');
+        document.body.classList.add('pdf-' + (fitMode === 'compact' ? 'compact' : fitMode === 'natural' ? 'natural' : 'fit'));
+
+        setTimeout(function () {
+            try {
+                var element = document.querySelector('.cv-container');
+                if (!element) throw new Error('CV alanı bulunamadı');
+
+                var name = (cvData && cvData.personal && cvData.personal.name)
+                    ? String(cvData.personal.name).replace(/\s+/g, '_')
+                    : 'CV';
+                var filename = name + '_CV.pdf';
+
+                if (typeof html2canvas === 'undefined') {
+                    throw new Error('html2canvas yok');
+                }
+                var JsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+                if (!JsPDF) throw new Error('jsPDF yok');
+
+                html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    windowWidth: 794,
+                    scrollX: 0,
+                    scrollY: 0
+                }).then(function (canvas) {
+                    var pdf = new JsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+                    try {
+                        pdf.setProperties({ subject: 'CV', keywords: 'CVDATA1:' + cvToBase64() });
+                    } catch (embedErr) {
+                        console.warn('Veri PDF içine gömülemedi:', embedErr);
+                    }
+                    var pageW = 210;
+                    var pageH = 297;
+                    var margin = 5;
+                    var maxW = pageW - margin * 2;
+                    var maxH = pageH - margin * 2;
+                    var imgW = maxW;
+                    var imgH = (canvas.height * imgW) / canvas.width;
+                    var y = margin;
+
+                    if (fitMode === 'natural') {
+                        // Taşarsa ek sayfa
+                        var heightLeft = imgH;
+                        var position = margin;
+                        pdf.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', margin, position, imgW, imgH);
+                        heightLeft -= maxH;
+                        while (heightLeft > 0) {
+                            position = heightLeft - imgH + margin;
+                            pdf.addPage();
+                            pdf.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', margin, position, imgW, imgH);
+                            heightLeft -= maxH;
+                        }
+                    } else {
+                        // fit veya compact: tek sayfaya sığdır
+                        if (imgH > maxH) {
+                            imgH = maxH;
+                            imgW = (canvas.width * imgH) / canvas.height;
+                        }
+                        var x = (pageW - imgW) / 2;
+                        pdf.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', x, y, imgW, imgH);
+                    }
+                    var blob = pdf.output('blob');
+                    return savePdfBlob(blob, filename);
+                }).then(function (mode) {
+                    resetPdfButton();
+                    document.body.classList.remove('pdf-compact', 'pdf-natural', 'pdf-fit');
+                    if (mode === 'cancelled') {
+                        showStatus('Kayıt iptal edildi', true);
+                    } else if (mode === 'picker') {
+                        showStatus('✓ PDF kaydedildi (konum seçildi)');
+                    } else {
+                        showStatus('✓ PDF indirildi');
+                    }
+                }).catch(function (err) {
+                    console.error('PDF hatası:', err);
+                    resetPdfButton();
+                    document.body.classList.remove('pdf-compact', 'pdf-natural', 'pdf-fit');
+                    showStatus('PDF hatası, yazdırma deneniyor…', true);
+                    printCV();
+                });
+            } catch (err) {
+                console.error('downloadPDF inner:', err);
+                resetPdfButton();
+                document.body.classList.remove('pdf-compact', 'pdf-natural', 'pdf-fit');
+                showStatus('PDF oluşturulamadı', true);
+            }
+        }, 350);
+    } catch (e) {
+        console.error('downloadPDF:', e);
+        resetPdfButton();
+        showStatus('PDF hatası', true);
+    }
+}
+
+/* ---------- Accordion ---------- */
+function toggleAcc(headerEl) {
+    try {
+        var item = headerEl.closest('.acc-item');
+        if (!item) return;
+        item.classList.toggle('open');
+    } catch (e) {
+        console.error('toggleAcc:', e);
+    }
+}
+
+/* ---------- Renk ---------- */
+function applyColors(sidebar, accent) {
+    try {
+        document.documentElement.style.setProperty('--sidebar-bg', sidebar);
+        document.documentElement.style.setProperty('--accent-color', accent);
+        document.documentElement.style.setProperty('--accent-dark', shadeColor(accent, -30));
+        document.documentElement.style.setProperty('--border-color', shadeColor(sidebar, 20));
+    } catch (e) {
+        console.error('applyColors:', e);
+    }
+}
+
+function applyTypography(font, size) {
+    try {
+        if (!cvData.typography) cvData.typography = { font: 'Inter', size: 'normal' };
+        font = font || cvData.typography.font || 'Inter';
+        size = size || cvData.typography.size || 'normal';
+        cvData.typography.font = font;
+        cvData.typography.size = size;
+
+        var fontMap = {
+            'Inter': "'Inter', 'Segoe UI', system-ui, sans-serif",
+            'Source Sans 3': "'Source Sans 3', 'Segoe UI', system-ui, sans-serif",
+            'Libre Baskerville': "'Libre Baskerville', Georgia, serif",
+            'Segoe UI': "'Segoe UI', system-ui, -apple-system, sans-serif"
+        };
+        var sizeMap = {
+            compact: { base: '10.4px', line: '1.32' },
+            normal: { base: '11.2px', line: '1.42' },
+            comfortable: { base: '12px', line: '1.5' }
+        };
+        var f = fontMap[font] || fontMap['Inter'];
+        var s = sizeMap[size] || sizeMap.normal;
+        document.documentElement.style.setProperty('--cv-font', f);
+        document.documentElement.style.setProperty('--cv-base', s.base);
+        document.documentElement.style.setProperty('--cv-line', s.line);
+
+        var ff = document.getElementById('fontFamily');
+        var fs = document.getElementById('fontSize');
+        if (ff) ff.value = font;
+        if (fs) fs.value = size;
+    } catch (e) {
+        console.error('applyTypography:', e);
+    }
+}
+
+function ensureLayoutDefaults() {
+    if (!cvData.layout) {
+        cvData.layout = {
+            sidebarStyle: 'solid-dark',
+            photoPosition: 'top',
+            photoShape: 'circle',
+            photoBorder: 'accent',
+            pageFrame: 'off',
+            frameColor: '#cbd5e1',
+            pdfFit: 'fit'
+        };
+    }
+    var L = cvData.layout;
+    if (!L.sidebarStyle) L.sidebarStyle = 'solid-dark';
+    if (!L.photoPosition) L.photoPosition = 'top';
+    if (!L.photoShape) L.photoShape = 'circle';
+    if (!L.photoBorder) L.photoBorder = 'accent';
+    if (!L.pageFrame) L.pageFrame = 'off';
+    if (!L.frameColor) L.frameColor = '#cbd5e1';
+    if (!L.pdfFit) L.pdfFit = 'fit';
+}
+
+function applyLayout() {
+    try {
+        ensureLayoutDefaults();
+        var L = cvData.layout;
+        var cv = document.getElementById('cvContainer') || document.querySelector('.cv-container');
+        var side = document.getElementById('sidebar');
+        var pics = [
+            document.getElementById('profilePic'),
+            document.getElementById('profilePicHeader')
+        ];
+
+        // Sayfa çerçevesi
+        if (cv) {
+            cv.classList.toggle('has-frame', L.pageFrame === 'on');
+            document.documentElement.style.setProperty('--cv-frame-color', L.frameColor || '#cbd5e1');
+            cv.classList.remove('photo-header', 'photo-sidebar-mid', 'photo-top', 'photo-top-left');
+            if (L.photoPosition === 'header') cv.classList.add('photo-header');
+            else if (L.photoPosition === 'top-left' || L.photoPosition === 'sidebar-mid') cv.classList.add('photo-top-left');
+            else cv.classList.add('photo-top');
+        }
+
+        // Sidebar stili
+        if (side) {
+            side.classList.remove('style-solid-dark', 'style-solid-light', 'style-top-band', 'style-accent-line');
+            side.classList.add('style-' + (L.sidebarStyle || 'solid-dark'));
+        }
+
+        // Foto şekil + çerçeve
+        pics.forEach(function (img) {
+            if (!img) return;
+            img.classList.remove('shape-circle', 'shape-rounded', 'shape-square', 'border-accent', 'border-white', 'border-none');
+            img.classList.add('shape-' + (L.photoShape || 'circle'));
+            img.classList.add('border-' + (L.photoBorder || 'accent'));
+        });
+
+        // Form kontrollerini senkronla
+        var map = {
+            sidebarStyle: L.sidebarStyle,
+            photoPosition: L.photoPosition,
+            photoShape: L.photoShape,
+            photoBorder: L.photoBorder,
+            pageFrame: L.pageFrame,
+            pdfFit: L.pdfFit
+        };
+        Object.keys(map).forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.value = map[id];
+        });
+        var fc = document.getElementById('frameColor');
+        if (fc) fc.value = L.frameColor || '#cbd5e1';
+    } catch (e) {
+        console.error('applyLayout:', e);
+    }
+}
+
+function collectLayoutFromForm() {
+    try {
+        ensureLayoutDefaults();
+        var ids = ['sidebarStyle', 'photoPosition', 'photoShape', 'photoBorder', 'pageFrame', 'pdfFit'];
+        ids.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) cvData.layout[id] = el.value;
+        });
+        var fc = document.getElementById('frameColor');
+        if (fc) cvData.layout.frameColor = fc.value;
+    } catch (e) {
+        console.error('collectLayoutFromForm:', e);
+    }
+}
+
+function shadeColor(color, percent) {
+    try {
+        var num = parseInt(color.replace('#', ''), 16);
+        var amt = Math.round(2.55 * percent);
+        var R = Math.max(0, Math.min(255, (num >> 16) + amt));
+        var G = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amt));
+        var B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
+        return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+    } catch (e) {
+        return color;
+    }
+}
+
+/* ---------- Foto ---------- */
+function changePhoto(event) {
+    try {
+        var file = event.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            showStatus('Sadece resim dosyası seçin', true);
+            return;
+        }
+        if (file.size > 1.5 * 1024 * 1024) {
+            showStatus('Fotoğraf 1.5 MB\'dan küçük olmalı', true);
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                cvData.photo = e.target.result;
+                var ep = document.getElementById('editPhoto');
+                var pp = document.getElementById('profilePic');
+                var pph = document.getElementById('profilePicHeader');
+                if (ep) ep.src = cvData.photo;
+                if (pp) pp.src = cvData.photo;
+                if (pph) pph.src = cvData.photo;
+                saveCV();
+                showStatus('Fotoğraf kaydedildi');
+            } catch (err) {
+                console.error(err);
+                showStatus('Fotoğraf kaydedilemedi', true);
+            }
+        };
+        reader.onerror = function () {
+            showStatus('Dosya okunamadı', true);
+        };
+        reader.readAsDataURL(file);
+    } catch (e) {
+        console.error('changePhoto:', e);
+        showStatus('Fotoğraf hatası', true);
+    }
+}
+
+function clearPhoto() {
+    try {
+        cvData.photo = '';
+        var ep = document.getElementById('editPhoto');
+        var pp = document.getElementById('profilePic');
+        if (ep) ep.src = '';
+        if (pp) pp.src = '';
+        saveCV();
+        showStatus('Fotoğraf kaldırıldı');
+    } catch (e) {
+        console.error('clearPhoto:', e);
+    }
+}
+
+/* ---------- Editörü doldur ---------- */
+function applyToEditor() {
+    try {
+        if (!cvData) return;
+        setVal('f_name', cvData.personal.name);
+        setVal('f_title', cvData.personal.title);
+        setVal('f_language', cvData.personal.language);
+        setVal('f_license', cvData.personal.license);
+        setVal('f_military', cvData.personal.military);
+        setVal('f_location', cvData.contact.location);
+        setVal('f_phone', cvData.contact.phone);
+        setVal('f_email', cvData.contact.email);
+        setVal('f_birthDate', cvData.contact.birthDate || '');
+        setVal('f_summary', cvData.summary);
+        refreshComputedFields();
+
+        var ep = document.getElementById('editPhoto');
+        if (ep) ep.src = cvData.photo || '';
+
+        applyColors(cvData.colors.sidebar, cvData.colors.accent);
+        var sc = document.getElementById('sidebarColor');
+        var ac = document.getElementById('accentColor');
+        if (sc) sc.value = cvData.colors.sidebar || '#1e293b';
+        if (ac) ac.value = cvData.colors.accent || '#38bdf8';
+        if (!cvData.typography) cvData.typography = { font: 'Inter', size: 'normal' };
+        applyTypography(cvData.typography.font, cvData.typography.size);
+        ensureLayoutDefaults();
+        applyLayout();
+
+        renderEditExperience();
+        renderEditEducation();
+        renderEditList('skills');
+        renderEditList('systems');
+        renderEditList('technical');
+        renderEditSidebarSections();
+        updateCounts();
+    } catch (e) {
+        console.error('applyToEditor:', e);
+        showStatus('Editör güncelleme hatası', true);
+    }
+}
+
+function setVal(id, val) {
+    try {
+        var el = document.getElementById(id);
+        if (el) el.value = val || '';
+    } catch (e) {
+        console.error('setVal:', e);
+    }
+}
+
+function updateCounts() {
+    try {
+        setText('expCount', (cvData.experience || []).length);
+        setText('eduCount', (cvData.education || []).length);
+        setText('skillsCount', (cvData.skills || []).length);
+        setText('systemsCount', (cvData.systems || []).length);
+        setText('technicalCount', (cvData.technical || []).length);
+    } catch (e) {
+        console.error('updateCounts:', e);
+    }
+}
+
+function setText(id, val) {
+    try {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val;
+    } catch (e) {}
+}
+
+/* ---------- Önizleme doldur ---------- */
+function applyToPreview() {
+    try {
+        if (!cvData) return;
+        setText('pv_name', cvData.personal.name);
+        setText('pv_title', cvData.personal.title);
+        setText('pv_language', cvData.personal.language);
+        setText('pv_license', cvData.personal.license);
+        setText('pv_military', cvData.personal.military);
+        setText('pv_location', cvData.contact.location);
+        setText('pv_phone', cvData.contact.phone);
+        setText('pv_email', cvData.contact.email);
+        setText('pv_birth', cvData.contact.birth);
+        setText('pv_summary', cvData.summary);
+
+        var pp = document.getElementById('profilePic');
+        if (pp) pp.src = cvData.photo || '';
+        var pph = document.getElementById('profilePicHeader');
+        if (pph) pph.src = cvData.photo || '';
+
+        applyColors(cvData.colors.sidebar, cvData.colors.accent);
+        if (cvData.typography) applyTypography(cvData.typography.font, cvData.typography.size);
+        ensureLayoutDefaults();
+        applyLayout();
+        ensureSidebarSections();
+        renderSidebarDynamic();
+
+        // Deneyim
+        var expEl = document.getElementById('pv_experience');
+        if (expEl) {
+            expEl.innerHTML = (cvData.experience || []).map(function (exp) {
+                var bullets = (exp.bullets || []).map(function (b) {
+                    return '<li>' + safeRich(b) + '</li>';
+                }).join('');
+                return '<div class="experience-item">' +
+                    '<div class="job-title">' + escapeHtml(exp.company) + '</div>' +
+                    '<div class="company-date">' + escapeHtml(exp.roleDate) + '</div>' +
+                    '<ul class="job-details">' + bullets + '</ul></div>';
+            }).join('');
+        }
+    } catch (e) {
+        console.error('applyToPreview:', e);
+        showStatus('Önizleme güncelleme hatası', true);
+    }
+}
+
+/* ---------- Sidebar bölümleri ---------- */
+function defaultSidebarSections() {
+    return [
+        { id: 'contact', title: 'İletişim', type: 'contact', visible: true },
+        { id: 'personal', title: 'Kişisel', type: 'personal', visible: true },
+        { id: 'education', title: 'Eğitim', type: 'education', visible: true },
+        { id: 'skills', title: 'Yetkinlikler', type: 'list', listKey: 'skills', visible: true },
+        { id: 'systems', title: 'Sistem Uzmanlığı', type: 'list', listKey: 'systems', visible: true },
+        { id: 'technical', title: 'Teknik Yetkinlikler', type: 'list', listKey: 'technical', visible: true }
+    ];
+}
+
+function ensureSidebarSections() {
+    try {
+        if (!cvData.sidebarSections || !cvData.sidebarSections.length) {
+            cvData.sidebarSections = defaultSidebarSections();
+        }
+        var hasPersonal = cvData.sidebarSections.some(function (sec) { return sec && sec.type === 'personal'; });
+        if (!hasPersonal) {
+            var ci = -1;
+            cvData.sidebarSections.forEach(function (sec, i) { if (sec && sec.id === 'contact') ci = i; });
+            cvData.sidebarSections.splice(ci >= 0 ? ci + 1 : 0, 0, { id: 'personal', title: 'Kişisel', type: 'personal', visible: true });
+        }
+        if (!cvData.customSections) cvData.customSections = {};
+        // Tekrarlayan maddeleri ve yetim id'leri temizle
+        var validIds = {};
+        (cvData.sidebarSections || []).forEach(function (s) {
+            if (s && s.type === 'custom') validIds[s.id] = true;
+        });
+        Object.keys(cvData.customSections).forEach(function (id) {
+            if (!validIds[id]) {
+                delete cvData.customSections[id];
+            } else {
+                cvData.customSections[id] = uniqueStrings(cvData.customSections[id]);
+            }
+        });
+    } catch (e) {
+        console.error('ensureSidebarSections:', e);
+        cvData.sidebarSections = defaultSidebarSections();
+        cvData.customSections = {};
+    }
+}
+
+function renderSidebarDynamic() {
+    try {
+        var box = document.getElementById('sidebarDynamic');
+        if (!box) return;
+        ensureSidebarSections();
+        var html = '';
+        (cvData.sidebarSections || []).forEach(function (sec) {
+            if (sec.visible === false) return;
+            var title = escapeHtml(sec.title || 'Bölüm');
+            html += '<h2>' + title + '</h2>';
+            if (sec.type === 'contact') {
+                html += '<p>' + escapeHtml(cvData.contact.location || '') + '</p>';
+                html += '<p>' + escapeHtml(cvData.contact.phone || '') + '</p>';
+                html += '<p>' + escapeHtml(cvData.contact.email || '') + '</p>';
+                html += '<p>' + escapeHtml(cvData.contact.birth || '') + '</p>';
+            } else if (sec.type === 'education') {
+                (cvData.education || []).forEach(function (e) {
+                    html += '<p><strong>' + escapeHtml(e.school || '') + '</strong></p>';
+                    html += '<p>' + escapeHtml(e.degree || '') + '</p>';
+                    html += '<p style="color:#94a3b8;font-size:9px">' + escapeHtml(e.years || '') + '</p>';
+                });
+            } else if (sec.type === 'personal') {
+                if (cvData.personal.language) html += '<p><strong>Yabancı Dil:</strong> ' + escapeHtml(cvData.personal.language) + '</p>';
+                if (cvData.personal.license) html += '<p><strong>Ehliyet:</strong> ' + escapeHtml(cvData.personal.license) + '</p>';
+                if (cvData.personal.military) html += '<p><strong>Askerlik:</strong> ' + escapeHtml(cvData.personal.military) + '</p>';
+            } else if (sec.type === 'list' && sec.listKey) {
+                html += '<ul>';
+                (cvData[sec.listKey] || []).forEach(function (item) {
+                    html += '<li>• ' + safeRich(item) + '</li>';
+                });
+                html += '</ul>';
+            } else if (sec.type === 'custom') {
+                var items = uniqueStrings((cvData.customSections && cvData.customSections[sec.id]) || []);
+                html += '<ul>';
+                items.forEach(function (item) {
+                    if (String(item).trim()) html += '<li>• ' + safeRich(item) + '</li>';
+                });
+                html += '</ul>';
+            }
+        });
+        box.innerHTML = html;
+    } catch (e) {
+        console.error('renderSidebarDynamic:', e);
+    }
+}
+
+function sectionToolsHtml(idx, sec, total) {
+    var isCustom = sec.type === 'custom';
+    var vis = sec.visible !== false;
+    return '' +
+        '<button type="button" class="btn btn-secondary btn-sm" title="Yukarı" onclick="event.stopPropagation();moveSidebarSection(' + idx + ',-1)" ' + (idx === 0 ? 'disabled' : '') + '>↑</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm" title="Aşağı" onclick="event.stopPropagation();moveSidebarSection(' + idx + ',1)" ' + (idx >= total - 1 ? 'disabled' : '') + '>↓</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm" title="' + (vis ? 'Gizle' : 'Göster') + '" onclick="event.stopPropagation();toggleSidebarSection(' + idx + ')">' + (vis ? '🚫' : '👁') + '</button>' +
+        (isCustom ? '<button type="button" class="btn btn-danger btn-sm" title="Sil" onclick="event.stopPropagation();removeSidebarSection(' + idx + ')">🗑</button>' : '');
+}
+
+function uniqueStrings(arr) {
+    try {
+        var seen = {};
+        var out = [];
+        (arr || []).forEach(function (s) {
+            var k = String(s || '').trim();
+            if (!k || seen[k]) return;
+            seen[k] = true;
+            out.push(k);
+        });
+        return out;
+    } catch (e) {
+        return arr || [];
+    }
+}
+
+function purgeOrphanCustomDom(panel) {
+    try {
+        if (!panel) return;
+        var valid = {};
+        (cvData.sidebarSections || []).forEach(function (s) {
+            if (s && s.type === 'custom') valid[s.id] = true;
+        });
+        // data-custom veya c_ ile başlayan tüm özel blokları tara
+        panel.querySelectorAll('[data-sid]').forEach(function (el) {
+            var sid = el.getAttribute('data-sid');
+            if (!sid) return;
+            var isCustomNode = el.getAttribute('data-custom') === '1' || String(sid).indexOf('c_') === 0;
+            if (!isCustomNode) return;
+            if (!valid[sid]) {
+                el.parentNode && el.parentNode.removeChild(el);
+            }
+        });
+    } catch (e) {
+        console.error('purgeOrphanCustomDom:', e);
+    }
+}
+
+function renderEditSidebarSections() {
+    try {
+        ensureSidebarSections();
+        var panel = document.getElementById('panelSidebar');
+        if (!panel) return;
+        var list = cvData.sidebarSections || [];
+        if (!cvData.customSections) cvData.customSections = {};
+
+        // 1) Geçersiz / çift özel DOM'u temizle
+        purgeOrphanCustomDom(panel);
+        // Mevcut geçerli custom'ları da silip yeniden kur (tek kopya garantisi)
+        list.forEach(function (sec) {
+            if (sec.type !== 'custom') return;
+            panel.querySelectorAll('[data-sid="' + sec.id + '"]').forEach(function (el) {
+                el.parentNode && el.parentNode.removeChild(el);
+            });
+        });
+
+        var customBox = document.getElementById('customSidebarAccordions');
+        if (!customBox) {
+            customBox = document.createElement('div');
+            customBox.id = 'customSidebarAccordions';
+        }
+        customBox.innerHTML = '';
+
+        // 2) Özel bölümleri tek tek oluştur
+        list.forEach(function (sec) {
+            if (sec.type !== 'custom') return;
+            var items = uniqueStrings((cvData.customSections[sec.id]) || []);
+            cvData.customSections[sec.id] = items;
+            var itemsHtml = items.map(function (it, i) {
+                var tid = 'cust_' + sec.id + '_' + i;
+                return '<div class="list-row">' +
+                    '<div class="field-with-expand" style="flex:1">' +
+                    '<textarea id="' + tid + '" data-field="customItem" data-sid="' + escapeHtml(sec.id) + '" rows="2">' + escapeHtml(stripHtml(it)) + '</textarea>' +
+                    '<button type="button" class="btn-expand" onclick="openFullEditor(\'Madde\', document.getElementById(\'' + tid + '\'), null)">⛶</button>' +
+                    '</div>' +
+                    '<button type="button" class="btn btn-danger btn-sm" onclick="removeCustomItem(\'' + escapeHtml(sec.id) + '\',' + i + ')">×</button>' +
+                    '</div>';
+            }).join('');
+            var acc = document.createElement('div');
+            acc.className = 'acc-item' + (sec.visible === false ? ' sec-hidden' : '');
+            acc.setAttribute('data-sid', sec.id);
+            acc.setAttribute('data-custom', '1');
+            acc.innerHTML =
+                '<div class="acc-header" onclick="toggleAcc(this)">' +
+                '<span class="acc-title" data-sid-title="' + escapeHtml(sec.id) + '">' + escapeHtml(sec.title || 'Başlık') + '</span>' +
+                '<span class="acc-tools" data-sid-tools="' + escapeHtml(sec.id) + '"></span>' +
+                '<span class="acc-chevron">▶</span></div>' +
+                '<div class="acc-body">' +
+                '<div class="form-group"><label>Başlık adı</label>' +
+                '<input type="text" data-field="customTitle" data-sid="' + escapeHtml(sec.id) + '" value="' + escapeHtml(sec.title || '') + '"></div>' +
+                '<div>' + itemsHtml + '</div>' +
+                '<button type="button" class="btn btn-secondary btn-sm section-add" onclick="addCustomItem(\'' + escapeHtml(sec.id) + '\')">+ Madde Ekle</button>' +
+                '</div>';
+            customBox.appendChild(acc);
+            bindEditorInputs(acc);
+        });
+
+        // 3) Sıraya diz: her section için DOM'u panel sonuna taşı
+        list.forEach(function (sec) {
+            var el;
+            if (sec.type === 'custom') {
+                el = customBox.querySelector('[data-sid="' + sec.id + '"]');
+            } else {
+                el = panel.querySelector(':scope > [data-sid="' + sec.id + '"]');
+            }
+            if (el) {
+                panel.appendChild(el);
+                el.classList.toggle('sec-hidden', sec.visible === false);
+                if (sec.type !== 'custom') {
+                    var titleEl = el.querySelector('[data-sid-title]');
+                    if (titleEl && sec.title) titleEl.textContent = sec.title;
+                }
+            }
+        });
+        // boş customBox'u panel sonunda tut
+        panel.appendChild(customBox);
+
+        // 4) Araç butonları
+        list.forEach(function (sec, idx) {
+            var tools = panel.querySelector('[data-sid-tools="' + sec.id + '"]');
+            if (tools) tools.innerHTML = sectionToolsHtml(idx, sec, list.length);
+        });
+    } catch (e) {
+        console.error('renderEditSidebarSections:', e);
+    }
+}
+
+function collectSidebarSectionsFromForm() {
+    try {
+        ensureSidebarSections();
+        if (!cvData.customSections) cvData.customSections = {};
+        var panel = document.getElementById('panelSidebar');
+        if (!panel) return;
+
+        var seenTitle = {};
+        panel.querySelectorAll('[data-field="customTitle"]').forEach(function (el) {
+            var id = el.getAttribute('data-sid');
+            if (!id || seenTitle[id]) return;
+            seenTitle[id] = true;
+            var sec = (cvData.sidebarSections || []).find(function (s) { return s.id === id; });
+            if (sec) sec.title = el.value.trim() || sec.title;
+        });
+
+        var byId = {};
+        var seenKey = {};
+        panel.querySelectorAll('[data-field="customItem"]').forEach(function (el) {
+            var id = el.getAttribute('data-sid');
+            if (!id) return;
+            var v = stripHtml(el.value.trim());
+            if (!v) return;
+            var key = id + '||' + v;
+            if (seenKey[key]) return;
+            seenKey[key] = true;
+            if (!byId[id]) byId[id] = [];
+            byId[id].push(v);
+        });
+
+        (cvData.sidebarSections || []).forEach(function (sec) {
+            if (sec.type !== 'custom') return;
+            if (byId[sec.id]) {
+                cvData.customSections[sec.id] = uniqueStrings(byId[sec.id]);
+            }
+        });
+        // Silinmiş id'leri customSections'tan temizle
+        Object.keys(cvData.customSections).forEach(function (id) {
+            var still = (cvData.sidebarSections || []).some(function (s) {
+                return s.id === id && s.type === 'custom';
+            });
+            if (!still) delete cvData.customSections[id];
+        });
+    } catch (e) {
+        console.error('collectSidebarSectionsFromForm:', e);
+    }
+}
+
+function addCustomItem(secId) {
+    try {
+        collectSidebarSectionsFromForm();
+        if (!cvData.customSections) cvData.customSections = {};
+        if (!cvData.customSections[secId]) cvData.customSections[secId] = [];
+        cvData.customSections[secId].push('Yeni madde');
+        renderEditSidebarSections();
+        saveCV();
+    } catch (e) {
+        console.error('addCustomItem:', e);
+    }
+}
+
+function removeCustomItem(secId, idx) {
+    try {
+        collectSidebarSectionsFromForm();
+        if (!cvData.customSections || !cvData.customSections[secId]) return;
+        cvData.customSections[secId].splice(idx, 1);
+        renderEditSidebarSections();
+        saveCV();
+    } catch (e) {
+        console.error('removeCustomItem:', e);
+    }
+}
+
+function switchEditPanel(panel) {
+    try {
+        var panels = {
+            pro: document.getElementById('panelPro'),
+            sidebar: document.getElementById('panelSidebar'),
+            appearance: document.getElementById('panelAppearance')
+        };
+        var tabs = {
+            pro: document.getElementById('subtabPro'),
+            sidebar: document.getElementById('subtabSidebar'),
+            appearance: document.getElementById('subtabAppearance')
+        };
+        Object.keys(panels).forEach(function (k) {
+            if (panels[k]) panels[k].classList.toggle('active', k === panel);
+            if (tabs[k]) tabs[k].classList.toggle('active', k === panel);
+        });
+        document.body.classList.remove('edit-panel-pro', 'edit-panel-sidebar', 'edit-panel-appearance');
+        document.body.classList.add('edit-panel-' + panel);
+    } catch (e) {
+        console.error('switchEditPanel:', e);
+    }
+}
+
+function openSectionModal() {
+    try {
+        switchEditPanel('sidebar');
+        switchView('edit');
+        var modal = document.getElementById('sectionModal');
+        var title = document.getElementById('smTitle');
+        if (title) title.value = '';
+        var box = document.getElementById('smItems');
+        if (box) {
+            box.innerHTML = '';
+            addSmItem('Yeni madde');
+        }
+        if (modal) {
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+        setTimeout(function () {
+            if (title) title.focus();
+        }, 50);
+    } catch (e) {
+        console.error('openSectionModal:', e);
+    }
+}
+
+function closeSectionModal() {
+    try {
+        var modal = document.getElementById('sectionModal');
+        if (modal) {
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+    } catch (e) {
+        console.error('closeSectionModal:', e);
+    }
+}
+
+function addSmItem(preset) {
+    try {
+        var box = document.getElementById('smItems');
+        if (!box) return;
+        var id = 'sm_' + Date.now() + '_' + Math.floor(Math.random() * 999);
+        var row = document.createElement('div');
+        row.className = 'sm-item-row';
+        row.innerHTML =
+            '<div class="field-with-expand">' +
+            '<textarea id="' + id + '" rows="2" placeholder="Madde…">' + escapeHtml(preset || '') + '</textarea>' +
+            '<button type="button" class="btn-expand" title="Tam ekran" onclick="openFullEditor(\'Madde\', document.getElementById(\'' + id + '\'), null)">⛶</button>' +
+            '</div>' +
+            '<button type="button" class="btn btn-danger btn-sm" onclick="this.parentNode.remove()">×</button>';
+        box.appendChild(row);
+    } catch (e) {
+        console.error('addSmItem:', e);
+    }
+}
+
+function confirmCreateSection() {
+    try {
+        var titleEl = document.getElementById('smTitle');
+        var title = titleEl ? titleEl.value.trim() : '';
+        if (!title) {
+            showStatus('Başlık girin', true);
+            if (titleEl) titleEl.focus();
+            return;
+        }
+        var items = [];
+        document.querySelectorAll('#smItems textarea').forEach(function (ta) {
+            var v = stripHtml(ta.value.trim());
+            if (v) items.push(v);
+        });
+        if (!items.length) items = ['Yeni madde'];
+
+        collectSidebarSectionsFromForm();
+        ensureSidebarSections();
+        var id = 'c_' + Date.now();
+        cvData.sidebarSections.push({
+            id: id,
+            title: title,
+            type: 'custom',
+            visible: true
+        });
+        if (!cvData.customSections) cvData.customSections = {};
+        cvData.customSections[id] = items;
+
+        closeSectionModal();
+        switchEditPanel('sidebar');
+        renderEditSidebarSections();
+        // Yeni ekleneni aç
+        var el = document.querySelector('#panelSidebar [data-sid="' + id + '"]');
+        if (el) el.classList.add('open');
+        saveCV();
+        showStatus('✓ «' + title + '» eklendi');
+    } catch (e) {
+        console.error('confirmCreateSection:', e);
+        showStatus('Oluşturma hatası', true);
+    }
+}
+
+function addSidebarSection() {
+    openSectionModal();
+}
+
+function moveSidebarSection(idx, dir) {
+    try {
+        collectSidebarSectionsFromForm();
+        var list = cvData.sidebarSections;
+        var j = idx + dir;
+        if (j < 0 || j >= list.length) return;
+        var t = list[idx];
+        list[idx] = list[j];
+        list[j] = t;
+        renderEditSidebarSections();
+        saveCV();
+    } catch (e) {
+        console.error('moveSidebarSection:', e);
+    }
+}
+
+function toggleSidebarSection(idx) {
+    try {
+        collectSidebarSectionsFromForm();
+        if (!cvData.sidebarSections[idx]) return;
+        cvData.sidebarSections[idx].visible = cvData.sidebarSections[idx].visible === false ? true : false;
+        renderEditSidebarSections();
+        saveCV();
+    } catch (e) {
+        console.error('toggleSidebarSection:', e);
+    }
+}
+
+function removeSidebarSection(idx) {
+    try {
+        ensureSidebarSections();
+        var sec = cvData.sidebarSections[idx];
+        if (!sec || sec.type !== 'custom') {
+            showStatus('Yalnızca özel başlıklar silinebilir', true);
+            return;
+        }
+        var name = sec.title || 'bu başlık';
+        var secId = sec.id;
+        if (!window.confirm('«' + name + '» silinecek. Emin misiniz?')) {
+            return;
+        }
+        // Önce DOM'dan kaldır (collect çift okumasın)
+        var panel = document.getElementById('panelSidebar');
+        if (panel) {
+            panel.querySelectorAll('[data-sid="' + secId + '"]').forEach(function (el) {
+                el.parentNode && el.parentNode.removeChild(el);
+            });
+        }
+        if (cvData.customSections) delete cvData.customSections[secId];
+        cvData.sidebarSections = cvData.sidebarSections.filter(function (s) {
+            return s.id !== secId;
+        });
+        renderEditSidebarSections();
+        applyToPreview();
+        pushHistory();
+        saveCV(true);
+        showStatus('«' + name + '» silindi');
+    } catch (e) {
+        console.error('removeSidebarSection:', e);
+        showStatus('Silme hatası', true);
+    }
+}
+
+/* ---------- Deneyim edit (liste → detay) ---------- */
+function renderEditExperience() {
+    try {
+        var container = document.getElementById('editExperienceList');
+        if (!container) return;
+        container.innerHTML = '';
+
+        // Detay modu
+        if (activeExpIndex !== null && cvData.experience[activeExpIndex]) {
+            var exp = cvData.experience[activeExpIndex];
+            var idx = activeExpIndex;
+            var bulletsHtml = (exp.bullets || []).map(function (b, bIdx) {
+                return '<div class="bullet-row">' +
+                    '<div class="field-with-expand" style="flex:1">' +
+                    '<textarea data-field="bullet" rows="3" id="bullet_' + bIdx + '">' + escapeHtml(stripHtml(b)) + '</textarea>' +
+                    '<button type="button" class="btn-expand" title="Tam ekran" onclick="openFullEditor(\'Madde ' + (bIdx + 1) + '\', document.getElementById(\'bullet_' + bIdx + '\'), null)">⛶</button>' +
+                    '</div>' +
+                    '<button type="button" class="btn btn-danger btn-sm" onclick="removeBullet(' + bIdx + ')">×</button>' +
+                    '</div>';
+            }).join('');
+
+            var wrap = document.createElement('div');
+            var durText = formatDuration(calcDurationMonths(exp.startDate, exp.isCurrent ? null : exp.endDate));
+            wrap.innerHTML =
+                '<div class="exp-detail-back">' +
+                '<button type="button" class="btn btn-secondary btn-sm" onclick="closeExpDetail()">← Listeye Dön</button>' +
+                '</div>' +
+                '<div class="card">' +
+                '<div class="form-group"><label>Şirket</label>' +
+                '<input type="text" data-field="company" value="' + escapeHtml(stripHtml(exp.company)) + '"></div>' +
+                '<div class="form-group"><label>Pozisyon / Ünvan</label>' +
+                '<input type="text" data-field="role" value="' + escapeHtml(stripHtml(exp.role || '')) + '"></div>' +
+                '<div class="form-row">' +
+                '<div class="form-group"><label>Başlangıç</label>' +
+                '<input type="month" data-field="startDate" value="' + escapeHtml(exp.startDate || '') + '"></div>' +
+                '<div class="form-group"><label>Bitiş</label>' +
+                '<input type="month" data-field="endDate" id="expEndDate" value="' + escapeHtml(exp.endDate || '') + '" ' + (exp.isCurrent ? 'disabled' : '') + '></div>' +
+                '</div>' +
+                '<div class="form-group" style="display:flex;align-items:center;gap:8px;">' +
+                '<input type="checkbox" data-field="isCurrent" id="expIsCurrent" ' + (exp.isCurrent ? 'checked' : '') + ' style="width:20px;height:20px;">' +
+                '<label for="expIsCurrent" style="margin:0;font-size:13px;">Hâlâ çalışıyorum</label>' +
+                '</div>' +
+                '<div id="expDurationDisplay" style="font-size:13px;color:#0284c7;font-weight:600;margin-bottom:10px;">' +
+                (durText ? ('Süre: ' + durText) : 'Tarih seçince süre hesaplanır') +
+                '</div>' +
+                '<label style="font-size:12px;font-weight:600;color:#64748b">Maddeler</label>' +
+                '<div class="bullet-list">' + bulletsHtml + '</div>' +
+                '<div class="card-actions">' +
+                '<button type="button" class="btn btn-secondary btn-sm" onclick="addBullet()">+ Madde</button>' +
+                '<button type="button" class="btn btn-danger btn-sm" onclick="removeExperience(' + idx + ')">Bu Deneyimi Sil</button>' +
+                '</div></div>';
+            container.appendChild(wrap);
+            bindEditorInputs(container);
+            bindExpDateListeners(container);
+            updateCounts();
+            return;
+        }
+
+        // Liste modu: şirket adları alt alta
+        refreshComputedFields();
+        (cvData.experience || []).forEach(function (exp, idx) {
+            var row = document.createElement('div');
+            row.className = 'exp-list-item';
+            row.onclick = function () { openExpDetail(idx); };
+            var line = buildRoleDateLine(exp);
+            row.innerHTML =
+                '<div class="exp-info">' +
+                '<div class="exp-company">' + escapeHtml(stripHtml(exp.company) || 'Şirket adı yok') + '</div>' +
+                '<div class="exp-role">' + escapeHtml(line || '') + '</div>' +
+                '</div>' +
+                '<div style="display:flex;gap:4px;align-items:center">' +
+                '<button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation();moveExperience(' + idx + ',-1)" ' + (idx === 0 ? 'disabled' : '') + '>↑</button>' +
+                '<button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation();moveExperience(' + idx + ',1)" ' + (idx >= cvData.experience.length - 1 ? 'disabled' : '') + '>↓</button>' +
+                '<span class="exp-arrow">›</span>' +
+                '</div>';
+            container.appendChild(row);
+        });
+        updateCounts();
+    } catch (e) {
+        console.error('renderEditExperience:', e);
+    }
+}
+
+function openExpDetail(idx) {
+    try {
+        activeExpIndex = idx;
+        renderEditExperience();
+    } catch (e) {
+        console.error('openExpDetail:', e);
+    }
+}
+
+function closeExpDetail() {
+    try {
+        collectFromEditor();
+        saveCV(true);
+        pushHistory();
+        activeExpIndex = null;
+        renderEditExperience();
+        showStatus('✓ Kaydedildi');
+    } catch (e) {
+        console.error('closeExpDetail:', e);
+        activeExpIndex = null;
+        renderEditExperience();
+    }
+}
+
+function addExperience() {
+    try {
+        collectFromEditor();
+        cvData.experience.unshift({
+            company: 'Şirket Adı',
+            role: 'Pozisyon',
+            startDate: '',
+            endDate: '',
+            isCurrent: false,
+            roleDate: '',
+            bullets: ['Yapılan iş açıklaması']
+        });
+        activeExpIndex = 0;
+        renderEditExperience();
+        saveCV();
+        showStatus('Deneyim eklendi — detayı doldurun');
+    } catch (e) {
+        console.error('addExperience:', e);
+        showStatus('Ekleme hatası', true);
+    }
+}
+
+function removeExperience(idx) {
+    try {
+        collectFromEditor();
+        cvData.experience.splice(idx, 1);
+        activeExpIndex = null;
+        renderEditExperience();
+        saveCV();
+        showStatus('Deneyim silindi');
+    } catch (e) {
+        console.error('removeExperience:', e);
+        showStatus('Silme hatası', true);
+    }
+}
+
+function addBullet() {
+    try {
+        if (activeExpIndex === null) return;
+        collectFromEditor();
+        if (!cvData.experience[activeExpIndex].bullets) cvData.experience[activeExpIndex].bullets = [];
+        cvData.experience[activeExpIndex].bullets.push('Yeni madde');
+        renderEditExperience();
+        saveCV();
+    } catch (e) {
+        console.error('addBullet:', e);
+    }
+}
+
+function removeBullet(bIdx) {
+    try {
+        if (activeExpIndex === null) return;
+        collectFromEditor();
+        cvData.experience[activeExpIndex].bullets.splice(bIdx, 1);
+        renderEditExperience();
+        saveCV();
+    } catch (e) {
+        console.error('removeBullet:', e);
+    }
+}
+
+function moveExperience(idx, dir) {
+    try {
+        collectFromEditor();
+        var newIdx = idx + dir;
+        if (newIdx < 0 || newIdx >= cvData.experience.length) return;
+        var tmp = cvData.experience[idx];
+        cvData.experience[idx] = cvData.experience[newIdx];
+        cvData.experience[newIdx] = tmp;
+        activeExpIndex = null;
+        renderEditExperience();
+        saveCV();
+    } catch (e) {
+        console.error('moveExperience:', e);
+    }
+}
+
+/* ---------- Eğitim edit ---------- */
+function renderEditEducation() {
+    try {
+        var container = document.getElementById('editEducationList');
+        if (!container) return;
+        container.innerHTML = '';
+        (cvData.education || []).forEach(function (edu, idx) {
+            var card = document.createElement('div');
+            card.className = 'card';
+            var sid = 'edu_school_' + idx;
+            var did = 'edu_degree_' + idx;
+            var yearsLine = buildEducationYears(edu);
+            card.innerHTML =
+                '<div class="form-group"><label>Okul</label>' +
+                '<div class="field-with-expand">' +
+                '<input type="text" id="' + sid + '" data-field="school" value="' + escapeHtml(stripHtml(edu.school)) + '">' +
+                '<button type="button" class="btn-expand" title="Tam ekran" onclick="openFullEditor(\'Okul\', document.getElementById(\'' + sid + '\'), null)">⛶</button>' +
+                '</div></div>' +
+                '<div class="form-group"><label>Bölüm / Derece</label>' +
+                '<div class="field-with-expand">' +
+                '<input type="text" id="' + did + '" data-field="degree" value="' + escapeHtml(stripHtml(edu.degree)) + '">' +
+                '<button type="button" class="btn-expand" title="Tam ekran" onclick="openFullEditor(\'Bölüm / Derece\', document.getElementById(\'' + did + '\'), null)">⛶</button>' +
+                '</div></div>' +
+                '<div class="form-row">' +
+                '<div class="form-group"><label>Başlangıç yılı</label>' +
+                '<input type="number" data-field="startYear" min="1950" max="2100" placeholder="1995" value="' + escapeHtml(edu.startYear || '') + '"></div>' +
+                '<div class="form-group"><label>Bitiş yılı</label>' +
+                '<input type="number" data-field="endYear" min="1950" max="2100" placeholder="2000" value="' + escapeHtml(edu.endYear || '') + '"></div>' +
+                '</div>' +
+                '<div style="font-size:13px;color:#0284c7;font-weight:600;margin-bottom:8px;">' +
+                (yearsLine ? ('Süre: ' + yearsLine) : 'Yılları girince süre hesaplanır') +
+                '</div>' +
+                '<div class="card-actions">' +
+                '<button type="button" class="btn btn-danger btn-sm" onclick="removeEducation(' + idx + ')">Sil</button>' +
+                '</div>';
+            container.appendChild(card);
+        });
+        bindEditorInputs(container);
+        updateCounts();
+    } catch (e) {
+        console.error('renderEditEducation:', e);
+    }
+}
+
+function addEducation() {
+    try {
+        collectFromEditor();
+        cvData.education.push({ school: 'Okul Adı', degree: 'Bölüm / Derece', startYear: '', endYear: '', years: '' });
+        renderEditEducation();
+        saveCV();
+        showStatus('Eğitim eklendi');
+    } catch (e) {
+        console.error('addEducation:', e);
+        showStatus('Ekleme hatası', true);
+    }
+}
+
+function removeEducation(idx) {
+    try {
+        collectFromEditor();
+        cvData.education.splice(idx, 1);
+        renderEditEducation();
+        saveCV();
+        showStatus('Eğitim silindi');
+    } catch (e) {
+        console.error('removeEducation:', e);
+        showStatus('Silme hatası', true);
+    }
+}
+
+/* ---------- Liste edit (skills / systems / technical) ---------- */
+function listTypeTitle(type) {
+    if (type === 'skills') return 'Yetkinlik';
+    if (type === 'systems') return 'Sistem';
+    if (type === 'technical') return 'Teknik';
+    return 'Madde';
+}
+
+function renderEditList(type) {
+    try {
+        var container = document.getElementById('edit' + capitalize(type) + 'List');
+        if (!container) return;
+        container.innerHTML = '';
+        var title = listTypeTitle(type);
+        (cvData[type] || []).forEach(function (item, idx) {
+            var row = document.createElement('div');
+            row.className = 'list-row';
+            var plain = stripHtml(item);
+            var iid = type + '_item_' + idx;
+            // Uzun satırlar için textarea + tam ekran
+            row.innerHTML =
+                '<div class="field-with-expand" style="flex:1">' +
+                '<textarea id="' + iid + '" data-field="item" rows="2">' + escapeHtml(plain) + '</textarea>' +
+                '<button type="button" class="btn-expand" title="Tam ekran" onclick="openFullEditor(\'' + title + ' ' + (idx + 1) + '\', document.getElementById(\'' + iid + '\'), null)">⛶</button>' +
+                '</div>' +
+                '<button type="button" class="btn btn-danger btn-sm" onclick="removeSkill(\'' + type + '\',' + idx + ')">×</button>';
+            container.appendChild(row);
+        });
+        bindEditorInputs(container);
+        updateCounts();
+    } catch (e) {
+        console.error('renderEditList:', e);
+    }
+}
+
+function addSkill(type) {
+    try {
+        collectFromEditor();
+        if (!cvData[type]) cvData[type] = [];
+        cvData[type].push('Yeni madde');
+        renderEditList(type);
+        saveCV();
+        showStatus('Madde eklendi');
+    } catch (e) {
+        console.error('addSkill:', e);
+        showStatus('Ekleme hatası', true);
+    }
+}
+
+function removeSkill(type, idx) {
+    try {
+        collectFromEditor();
+        cvData[type].splice(idx, 1);
+        renderEditList(type);
+        saveCV();
+        showStatus('Madde silindi');
+    } catch (e) {
+        console.error('removeSkill:', e);
+        showStatus('Silme hatası', true);
+    }
+}
+
+/* ---------- Input bağlama (değişince kaydet) ---------- */
+function bindEditorInputs(root) {
+    try {
+        var scope = root || document.getElementById('editorView');
+        if (!scope) return;
+        scope.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="month"], input[type="number"], textarea').forEach(function (el) {
+            if (el.dataset.bound) return;
+            el.dataset.bound = '1';
+            el.addEventListener('change', function () {
+                scheduleSave();
+            });
+            el.addEventListener('blur', function () {
+                scheduleSave();
+            });
+            if (el.tagName === 'TEXTAREA') {
+                el.addEventListener('dblclick', function () {
+                    var label = 'Metin';
+                    if (el.id === 'f_summary') label = 'Yönetici Özeti';
+                    else if (el.getAttribute('data-field') === 'bullet') label = 'Deneyim maddesi';
+                    openFullEditor(label, el, null);
+                });
+            }
+        });
+    } catch (e) {
+        console.error('bindEditorInputs:', e);
+    }
+}
+
+function bindExpDateListeners(root) {
+    try {
+        if (!root) return;
+        var startEl = root.querySelector('[data-field="startDate"]');
+        var endEl = root.querySelector('[data-field="endDate"]');
+        var curEl = root.querySelector('[data-field="isCurrent"]');
+        var durEl = document.getElementById('expDurationDisplay');
+
+        function updateDur() {
+            try {
+                var s = startEl ? startEl.value : '';
+                var isCur = curEl && curEl.checked;
+                var e = isCur ? null : (endEl ? endEl.value : '');
+                if (endEl) endEl.disabled = !!isCur;
+                var months = calcDurationMonths(s, e);
+                if (durEl) {
+                    durEl.textContent = months !== null && s
+                        ? ('Süre: ' + formatDuration(months) + (isCur ? ' (devam ediyor)' : ''))
+                        : 'Tarih seçince süre hesaplanır';
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        if (startEl) startEl.addEventListener('change', function () { updateDur(); scheduleSave(); });
+        if (endEl) endEl.addEventListener('change', function () { updateDur(); scheduleSave(); });
+        if (curEl) curEl.addEventListener('change', function () { updateDur(); scheduleSave(); });
+        updateDur();
+    } catch (e) {
+        console.error('bindExpDateListeners:', e);
+    }
+}
+
+/* ---------- Olaylar ---------- */
+function setupEventListeners() {
+    try {
+        // Sabit kişisel alanlar
+        bindEditorInputs(document.getElementById('editorView'));
+
+        var birthEl = document.getElementById('f_birthDate');
+        if (birthEl) {
+            birthEl.addEventListener('change', function () {
+                try {
+                    if (cvData) cvData.contact.birthDate = this.value;
+                    refreshComputedFields();
+                    scheduleSave();
+                } catch (e) { console.error(e); }
+            });
+        }
+
+        var sidebarColor = document.getElementById('sidebarColor');
+        var accentColor = document.getElementById('accentColor');
+        if (sidebarColor) {
+            sidebarColor.addEventListener('input', function () {
+                try {
+                    cvData.colors.sidebar = this.value;
+                    applyColors(cvData.colors.sidebar, cvData.colors.accent);
+                } catch (e) { console.error(e); }
+            });
+            sidebarColor.addEventListener('change', function () {
+                try {
+                    cvData.colors.sidebar = this.value;
+                    applyColors(cvData.colors.sidebar, cvData.colors.accent);
+                    saveCV();
+                } catch (e) { console.error(e); }
+            });
+        }
+        if (accentColor) {
+            accentColor.addEventListener('input', function () {
+                try {
+                    cvData.colors.accent = this.value;
+                    applyColors(cvData.colors.sidebar, cvData.colors.accent);
+                } catch (e) { console.error(e); }
+            });
+            accentColor.addEventListener('change', function () {
+                try {
+                    cvData.colors.accent = this.value;
+                    applyColors(cvData.colors.sidebar, cvData.colors.accent);
+                    saveCV();
+                } catch (e) { console.error(e); }
+            });
+        }
+
+        var fontFamily = document.getElementById('fontFamily');
+        var fontSize = document.getElementById('fontSize');
+        if (fontFamily) {
+            fontFamily.addEventListener('change', function () {
+                try {
+                    applyTypography(this.value, (cvData.typography && cvData.typography.size) || 'normal');
+                    saveCV();
+                    showStatus('Yazı tipi güncellendi');
+                } catch (e) { console.error(e); }
+            });
+        }
+        if (fontSize) {
+            fontSize.addEventListener('change', function () {
+                try {
+                    applyTypography((cvData.typography && cvData.typography.font) || 'Inter', this.value);
+                    saveCV();
+                    showStatus('Yazı boyutu güncellendi');
+                } catch (e) { console.error(e); }
+            });
+        }
+
+        // Layout kontrolleri
+        ['sidebarStyle', 'photoPosition', 'photoShape', 'photoBorder', 'pageFrame', 'pdfFit'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('change', function () {
+                try {
+                    collectLayoutFromForm();
+                    applyLayout();
+                    saveCV();
+                    showStatus('Görünüm güncellendi');
+                } catch (e) { console.error(e); }
+            });
+        });
+        var frameColor = document.getElementById('frameColor');
+        if (frameColor) {
+            frameColor.addEventListener('input', function () {
+                try {
+                    ensureLayoutDefaults();
+                    cvData.layout.frameColor = this.value;
+                    applyLayout();
+                } catch (e) { console.error(e); }
+            });
+            frameColor.addEventListener('change', function () {
+                try {
+                    ensureLayoutDefaults();
+                    cvData.layout.frameColor = this.value;
+                    applyLayout();
+                    saveCV();
+                } catch (e) { console.error(e); }
+            });
+        }
+    } catch (e) {
+        console.error('setupEventListeners:', e);
+    }
+}
+
+/* ---------- Bağlam / DOM kontrolü ---------- */
+function verifyDOMBindings() {
+    try {
+        var required = [
+            'editorView', 'previewView', 'tabEdit', 'tabPreview',
+            'editExperienceList', 'editEducationList', 'editSkillsList',
+            'editSystemsList', 'editTechnicalList',
+            'pv_name', 'pv_title', 'pv_experience', 'profilePic', 'editPhoto',
+            'undoBtn', 'redoBtn', 'sidebarColor', 'accentColor', 'f_name', 'f_summary', 'f_birthDate'
+        ];
+        var missing = [];
+        required.forEach(function (id) {
+            if (!document.getElementById(id)) missing.push(id);
+        });
+        if (missing.length) {
+            console.warn('Eksik DOM elemanları:', missing);
+            showStatus('Bazı arayüz parçaları eksik: ' + missing.length, true);
+            return false;
+        }
+        console.log('DOM bağlam kontrolü: OK');
+        return true;
+    } catch (e) {
+        console.error('verifyDOMBindings:', e);
+        return false;
+    }
+}
+
+/* ---------- Başlat ---------- */
+document.addEventListener('DOMContentLoaded', function () {
+    try {
+        var ok = verifyDOMBindings();
+        if (!ok) {
+            showStatus('Arayüz yüklenemedi', true);
+        }
+        loadCV();
+        setupEventListeners();
+        document.body.classList.add('view-edit', 'edit-panel-pro');
+        window.addEventListener('resize', function () {
+            if (document.body.classList.contains('view-preview')) {
+                fitPreviewToScreen();
+            }
+        });
+    } catch (e) {
+        console.error('Başlatma hatası:', e);
+        showStatus('Program başlatılamadı', true);
+    }
+});
+</script>
+<script>
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function (e) { console.warn('SW kaydı yapılamadı:', e); });
+    });
+}
+</script>
+</body>
+</html>
