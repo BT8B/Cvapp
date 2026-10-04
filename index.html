@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Hazırlama Programı</title>
+    <title>CV Maker</title>
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f8fafc">
@@ -102,6 +102,30 @@
         }
         @media (max-width: 380px) {
             .app-name { display: none; }
+        }
+        .lang-switch {
+            display: flex;
+            flex-shrink: 0;
+            background: #e8eef5;
+            border-radius: 10px;
+            padding: 2px;
+            gap: 2px;
+        }
+        .lang-switch button {
+            border: none;
+            background: transparent;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 8px;
+            border-radius: 8px;
+            color: #64748b;
+            min-height: 28px;
+            cursor: pointer;
+        }
+        .lang-switch button.active {
+            background: #fff;
+            color: #0f172a;
+            box-shadow: 0 1px 3px rgba(15,23,42,0.1);
         }
 
         /* Segment: Düzenle / Önizle */
@@ -1173,8 +1197,12 @@
             <span class="app-name">CV Maker</span>
         </div>
         <div class="app-tabs">
-            <button type="button" id="tabEdit" class="active" onclick="switchView('edit')">✏️ Düzenle</button>
-            <button type="button" id="tabPreview" onclick="switchView('preview')">👁️ Önizle</button>
+            <button type="button" id="tabEdit" class="active" onclick="switchView('edit')" data-i18n="tab_edit">✏️ Düzenle</button>
+            <button type="button" id="tabPreview" onclick="switchView('preview')" data-i18n="tab_preview">👁️ Önizle</button>
+        </div>
+        <div class="lang-switch" role="group" aria-label="Language">
+            <button type="button" id="langTR" class="active" onclick="setLang('tr')">TR</button>
+            <button type="button" id="langEN" onclick="setLang('en')">EN</button>
         </div>
     </div>
 </header>
@@ -1184,9 +1212,9 @@
 <!-- ========== DÜZENLE ========== -->
 <div id="editorView" class="view active">
     <div class="edit-subtabs">
-        <button type="button" class="edit-subtab active" id="subtabPro" onclick="switchEditPanel('pro')">Profesyonel</button>
-        <button type="button" class="edit-subtab" id="subtabSidebar" onclick="switchEditPanel('sidebar')">Sidebar</button>
-        <button type="button" class="edit-subtab" id="subtabAppearance" onclick="switchEditPanel('appearance')">Görünüm</button>
+        <button type="button" class="edit-subtab active" id="subtabPro" onclick="switchEditPanel('pro')" data-i18n="panel_pro">Profesyonel</button>
+        <button type="button" class="edit-subtab" id="subtabSidebar" onclick="switchEditPanel('sidebar')" data-i18n="panel_sidebar">Sidebar</button>
+        <button type="button" class="edit-subtab" id="subtabAppearance" onclick="switchEditPanel('appearance')" data-i18n="panel_appearance">Görünüm</button>
     </div>
     <div class="editor-wrap">
 
@@ -1196,7 +1224,7 @@
         <!-- Kişisel (isim / unvan / foto) -->
         <div class="acc-item" data-section="personal">
             <div class="acc-header" onclick="toggleAcc(this)">
-                <span class="acc-title">Kimlik & Foto</span>
+                <span class="acc-title" data-i18n="sec_identity">Kimlik & Foto</span>
                 <span class="acc-chevron">▶</span>
             </div>
             <div class="acc-body">
@@ -1204,16 +1232,16 @@
                     <img id="editPhoto" src="" alt="Foto">
                     <div class="photo-btns">
                         <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="changePhoto(event)">
-                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('fileInput').click()">Fotoğraf Seç</button>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="clearPhoto()">Kaldır</button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('fileInput').click()" data-i18n="btn_photo">Fotoğraf Seç</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="clearPhoto()" data-i18n="btn_remove">Kaldır</button>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Ad Soyad</label>
+                    <label data-i18n="lbl_name">Ad Soyad</label>
                     <input type="text" id="f_name" data-path="personal.name">
                 </div>
                 <div class="form-group">
-                    <label>Unvan</label>
+                    <label data-i18n="lbl_title">Unvan</label>
                     <input type="text" id="f_title" data-path="personal.title">
                 </div>
             </div>
@@ -1222,15 +1250,15 @@
         <!-- Özet -->
         <div class="acc-item" data-section="summary">
             <div class="acc-header" onclick="toggleAcc(this)">
-                <span class="acc-title">Yönetici Özeti</span>
+                <span class="acc-title" data-i18n="sec_summary">Yönetici Özeti</span>
                 <span class="acc-chevron">▶</span>
             </div>
             <div class="acc-body">
                 <div class="form-group">
-                    <label>Özet metin</label>
+                    <label data-i18n="lbl_summary">Özet metin</label>
                     <div class="field-with-expand">
                         <textarea id="f_summary" data-path="summary" rows="5"></textarea>
-                        <button type="button" class="btn-expand" title="Tam ekran düzenle" onclick="openFullEditor('Yönetici Özeti', document.getElementById('f_summary'), null)">⛶</button>
+                        <button type="button" class="btn-expand" title="Tam ekran düzenle" data-i18n-title="title_fullscreen" onclick="openFullEditor(t('sec_summary'), document.getElementById('f_summary'), null)">⛶</button>
                     </div>
                 </div>
             </div>
@@ -1239,13 +1267,13 @@
         <!-- Deneyim -->
         <div class="acc-item" data-section="experience">
             <div class="acc-header" onclick="toggleAcc(this)">
-                <span class="acc-title">Profesyonel Deneyim</span>
+                <span class="acc-title" data-i18n="sec_experience">Profesyonel Deneyim</span>
                 <span class="acc-count" id="expCount">0</span>
                 <span class="acc-chevron">▶</span>
             </div>
             <div class="acc-body">
                 <div id="editExperienceList"></div>
-                <button type="button" class="btn btn-primary section-add" onclick="addExperience()">+ Deneyim Ekle</button>
+                <button type="button" class="btn btn-primary section-add" onclick="addExperience()" data-i18n="btn_add_exp">+ Deneyim Ekle</button>
             </div>
         </div>
 
@@ -1257,25 +1285,25 @@
         <!-- İletişim & kişisel -->
         <div class="acc-item" data-section="contact" data-sid="contact">
             <div class="acc-header" onclick="toggleAcc(this)">
-                <span class="acc-title" data-sid-title="contact">İletişim</span>
+                <span class="acc-title" data-sid-title="contact" data-i18n="sec_contact">İletişim</span>
                 <span class="acc-tools" data-sid-tools="contact"></span>
                 <span class="acc-chevron">▶</span>
             </div>
             <div class="acc-body">
                 <div class="form-group">
-                    <label>Konum</label>
+                    <label data-i18n="lbl_location">Konum</label>
                     <input type="text" id="f_location" data-path="contact.location">
                 </div>
                 <div class="form-group">
-                    <label>Telefon</label>
+                    <label data-i18n="lbl_phone">Telefon</label>
                     <input type="tel" id="f_phone" data-path="contact.phone">
                 </div>
                 <div class="form-group">
-                    <label>E-posta</label>
+                    <label data-i18n="lbl_email">E-posta</label>
                     <input type="email" id="f_email" data-path="contact.email">
                 </div>
                 <div class="form-group">
-                    <label>Doğum tarihi</label>
+                    <label data-i18n="lbl_birth">Doğum tarihi</label>
                     <input type="date" id="f_birthDate">
                     <div id="ageDisplay" style="margin-top:6px;font-size:13px;color:#0284c7;font-weight:600;"></div>
                     <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Takvimden seçin; yaş otomatik hesaplanır.</p>
@@ -1292,15 +1320,15 @@
             </div>
             <div class="acc-body">
                 <div class="form-group">
-                    <label>Yabancı Dil</label>
+                    <label data-i18n="lbl_language">Yabancı Dil</label>
                     <input type="text" id="f_language" data-path="personal.language">
                 </div>
                 <div class="form-group">
-                    <label>Ehliyet</label>
+                    <label data-i18n="lbl_license">Ehliyet</label>
                     <input type="text" id="f_license" data-path="personal.license">
                 </div>
                 <div class="form-group">
-                    <label>Askerlik</label>
+                    <label data-i18n="lbl_military">Askerlik</label>
                     <input type="text" id="f_military" data-path="personal.military">
                 </div>
             </div>
@@ -1309,56 +1337,56 @@
         <!-- Eğitim -->
         <div class="acc-item" data-section="education" data-sid="education">
             <div class="acc-header" onclick="toggleAcc(this)">
-                <span class="acc-title" data-sid-title="education">Eğitim</span>
+                <span class="acc-title" data-sid-title="education" data-i18n="sec_education">Eğitim</span>
                 <span class="acc-count" id="eduCount">0</span>
                 <span class="acc-tools" data-sid-tools="education"></span>
                 <span class="acc-chevron">▶</span>
             </div>
             <div class="acc-body">
                 <div id="editEducationList"></div>
-                <button type="button" class="btn btn-primary section-add" onclick="addEducation()">+ Eğitim Ekle</button>
+                <button type="button" class="btn btn-primary section-add" onclick="addEducation()" data-i18n="btn_add_edu">+ Eğitim Ekle</button>
             </div>
         </div>
 
         <!-- Yetkinlikler -->
         <div class="acc-item" data-section="skills" data-sid="skills">
             <div class="acc-header" onclick="toggleAcc(this)">
-                <span class="acc-title" data-sid-title="skills">Yetkinlikler</span>
+                <span class="acc-title" data-sid-title="skills" data-i18n="sec_skills">Yetkinlikler</span>
                 <span class="acc-count" id="skillsCount">0</span>
                 <span class="acc-tools" data-sid-tools="skills"></span>
                 <span class="acc-chevron">▶</span>
             </div>
             <div class="acc-body">
                 <div id="editSkillsList"></div>
-                <button type="button" class="btn btn-primary section-add" onclick="addSkill('skills')">+ Yetkinlik Ekle</button>
+                <button type="button" class="btn btn-primary section-add" onclick="addSkill('skills')" data-i18n="btn_add_skill">+ Yetkinlik Ekle</button>
             </div>
         </div>
 
         <!-- Sistem -->
         <div class="acc-item" data-section="systems" data-sid="systems">
             <div class="acc-header" onclick="toggleAcc(this)">
-                <span class="acc-title" data-sid-title="systems">Sistem Uzmanlığı</span>
+                <span class="acc-title" data-sid-title="systems" data-i18n="sec_systems">Sistem Uzmanlığı</span>
                 <span class="acc-count" id="systemsCount">0</span>
                 <span class="acc-tools" data-sid-tools="systems"></span>
                 <span class="acc-chevron">▶</span>
             </div>
             <div class="acc-body">
                 <div id="editSystemsList"></div>
-                <button type="button" class="btn btn-primary section-add" onclick="addSkill('systems')">+ Sistem Ekle</button>
+                <button type="button" class="btn btn-primary section-add" onclick="addSkill('systems')" data-i18n="btn_add_system">+ Sistem Ekle</button>
             </div>
         </div>
 
         <!-- Teknik -->
         <div class="acc-item" data-section="technical" data-sid="technical">
             <div class="acc-header" onclick="toggleAcc(this)">
-                <span class="acc-title" data-sid-title="technical">Teknik Yetkinlikler</span>
+                <span class="acc-title" data-sid-title="technical" data-i18n="sec_technical">Teknik Yetkinlikler</span>
                 <span class="acc-count" id="technicalCount">0</span>
                 <span class="acc-tools" data-sid-tools="technical"></span>
                 <span class="acc-chevron">▶</span>
             </div>
             <div class="acc-body">
                 <div id="editTechnicalList"></div>
-                <button type="button" class="btn btn-primary section-add" onclick="addSkill('technical')">+ Teknik Ekle</button>
+                <button type="button" class="btn btn-primary section-add" onclick="addSkill('technical')" data-i18n="btn_add_tech">+ Teknik Ekle</button>
             </div>
         </div>
 
@@ -1371,7 +1399,7 @@
         <div id="panelAppearance" class="edit-panel">
         <div class="acc-item" data-section="appearance">
             <div class="acc-header" onclick="toggleAcc(this)">
-                <span class="acc-title">Görünüm Ayarları</span>
+                <span class="acc-title" data-i18n="sec_appearance">Görünüm Ayarları</span>
                 <span class="acc-chevron">▶</span>
             </div>
             <div class="acc-body">
@@ -1492,7 +1520,7 @@
             <button type="button" class="btn" onclick="zoomPreview(-1)" title="Küçült">−</button>
             <span class="zoom-label" id="zoomLabel">100%</span>
             <button type="button" class="btn" onclick="zoomPreview(1)" title="Büyüt">+</button>
-            <button type="button" class="btn btn-fit" onclick="zoomPreview(0)" title="Ekrana sığdır">Sığdır</button>
+            <button type="button" class="btn btn-fit" onclick="zoomPreview(0)" title="Ekrana sığdır" data-i18n="btn_fit" data-i18n-title="title_fit">Sığdır</button>
         </div>
     </div>
     <div class="preview-wrap">
@@ -1514,9 +1542,9 @@
                         <h2 id="pv_title"></h2>
                     </div>
                 </div>
-                <div class="section-title">Yönetici Özeti</div>
+                <div class="section-title" data-i18n="sec_summary">Yönetici Özeti</div>
                 <p class="summary-text" id="pv_summary"></p>
-                <div class="section-title">Profesyonel Deneyim</div>
+                <div class="section-title" data-i18n="sec_experience">Profesyonel Deneyim</div>
                 <div id="pv_experience"></div>
             </div>
         </div>
@@ -1525,62 +1553,62 @@
 </div>
 
 <!-- FAB: Sidebar başlık ekle -->
-<button type="button" class="fab-add" id="fabAddSection" title="Sidebar başlığı ekle" onclick="openSectionModal()">+</button>
+<button type="button" class="fab-add" id="fabAddSection" title="Sidebar başlığı ekle" data-i18n-title="title_fab" onclick="openSectionModal()">+</button>
 
 <!-- Yeni sidebar başlık modalı -->
 <div id="sectionModal" class="sec-modal" aria-hidden="true">
     <div class="sec-modal-card">
         <div class="sec-modal-header">
-            <strong>Yeni Sidebar Başlığı</strong>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="closeSectionModal()">İptal</button>
+            <strong data-i18n="modal_new_section">Yeni Sidebar Başlığı</strong>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="closeSectionModal()" data-i18n="btn_cancel">İptal</button>
         </div>
         <div class="sec-modal-body">
             <div class="form-group">
-                <label>Başlık</label>
+                <label data-i18n="lbl_heading">Başlık</label>
                 <div class="field-with-expand">
-                    <input type="text" id="smTitle" placeholder="Örn. Sertifikalar">
-                    <button type="button" class="btn-expand" title="Tam ekran" onclick="openFullEditor('Başlık', document.getElementById('smTitle'), null)">⛶</button>
+                    <input type="text" id="smTitle" placeholder="Örn. Sertifikalar" data-i18n-placeholder="ph_certificates">
+                    <button type="button" class="btn-expand" title="Tam ekran" data-i18n-title="title_fullscreen" onclick="openFullEditor(t('lbl_heading'), document.getElementById('smTitle'), null)">⛶</button>
                 </div>
             </div>
-            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:6px;">Maddeler</label>
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:6px;" data-i18n="lbl_bullets">Maddeler</label>
             <div id="smItems"></div>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="addSmItem()" style="margin-top:6px;">+ Madde Ekle</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addSmItem()" style="margin-top:6px;" data-i18n="btn_add_bullet">+ Madde Ekle</button>
         </div>
         <div class="sec-modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeSectionModal()">İptal</button>
-            <button type="button" class="btn btn-primary" onclick="confirmCreateSection()">Oluştur</button>
+            <button type="button" class="btn btn-secondary" onclick="closeSectionModal()" data-i18n="btn_cancel">İptal</button>
+            <button type="button" class="btn btn-primary" onclick="confirmCreateSection()" data-i18n="btn_create">Oluştur</button>
         </div>
     </div>
 </div>
 
 <!-- ALT DOCK -->
 <div class="bottom-bar">
-    <button type="button" class="btn bb-compact bb-undo" id="undoBtn" onclick="undoCV()" disabled title="Geri">
-        <span class="bb-ico">↩</span><span class="bb-lbl">Geri</span>
+    <button type="button" class="btn bb-compact bb-undo" id="undoBtn" onclick="undoCV()" disabled title="Geri" data-i18n-title="title_undo">
+        <span class="bb-ico">↩</span><span class="bb-lbl" data-i18n="btn_undo">Geri</span>
     </button>
-    <button type="button" class="btn bb-compact bb-redo" id="redoBtn" onclick="redoCV()" disabled title="İleri">
-        <span class="bb-ico">↪</span><span class="bb-lbl">İleri</span>
+    <button type="button" class="btn bb-compact bb-redo" id="redoBtn" onclick="redoCV()" disabled title="İleri" data-i18n-title="title_redo">
+        <span class="bb-ico">↪</span><span class="bb-lbl" data-i18n="btn_redo">İleri</span>
     </button>
     <button type="button" class="btn btn-primary bb-save" onclick="saveCV()">
-        <span class="bb-ico">💾</span><span class="bb-lbl">Kaydet</span>
+        <span class="bb-ico">💾</span><span class="bb-lbl" data-i18n="btn_save">Kaydet</span>
     </button>
     <button type="button" class="btn btn-primary bb-pdf" id="pdfBtn" onclick="downloadPDF()">
         <span class="bb-ico">📄</span><span class="bb-lbl">PDF</span>
     </button>
     <button type="button" class="btn btn-primary bb-text" id="textPdfBtn" onclick="printCV()">
-        <span class="bb-ico">📝</span><span class="bb-lbl">Metin</span>
+        <span class="bb-ico">📝</span><span class="bb-lbl" data-i18n="btn_text">Metin</span>
     </button>
 </div>
 
 <!-- TAM EKRAN METİN DÜZENLEYİCİ -->
 <div id="fullEditor" class="full-editor" aria-hidden="true">
     <div class="full-editor-header">
-        <button type="button" class="btn btn-secondary btn-sm" onclick="closeFullEditor(false)">İptal</button>
-        <span class="fe-title" id="feTitle">Düzenle</span>
-        <button type="button" class="btn btn-primary btn-sm" onclick="closeFullEditor(true)">Tamam</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeFullEditor(false)" data-i18n="btn_cancel">İptal</button>
+        <span class="fe-title" id="feTitle" data-i18n="tab_edit">Düzenle</span>
+        <button type="button" class="btn btn-primary btn-sm" onclick="closeFullEditor(true)" data-i18n="btn_done">Tamam</button>
     </div>
     <div class="full-editor-body">
-        <textarea id="feTextarea" placeholder="Metni buraya yazın…"></textarea>
+        <textarea id="feTextarea" placeholder="Metni buraya yazın…" data-i18n-placeholder="ph_text"></textarea>
     </div>
 </div>
 
@@ -1595,10 +1623,221 @@
    ========================================================= */
 
 const STORAGE_KEY = 'cv_app_data';
+const LANG_KEY = 'cv_app_lang';
 const IDB_NAME = 'cv_app_db';
 const IDB_STORE = 'kv';
 const IDB_VERSION = 1;
 const MAX_HISTORY = 30;
+
+var appLang = 'tr';
+var I18N = {
+    tr: {
+        tab_edit: '✏️ Düzenle',
+        tab_preview: '👁️ Önizle',
+        panel_pro: 'Profesyonel',
+        panel_sidebar: 'Sidebar',
+        panel_appearance: 'Görünüm',
+        sec_identity: 'Kimlik & Foto',
+        sec_summary: 'Yönetici Özeti',
+        sec_experience: 'Profesyonel Deneyim',
+        sec_contact: 'İletişim',
+        sec_education: 'Eğitim',
+        sec_skills: 'Yetkinlikler',
+        sec_systems: 'Sistem Uzmanlığı',
+        sec_technical: 'Teknik Yetkinlikler',
+        sec_appearance: 'Görünüm Ayarları',
+        btn_photo: 'Fotoğraf Seç',
+        btn_remove: 'Kaldır',
+        btn_add_exp: '+ Deneyim Ekle',
+        btn_add_edu: '+ Eğitim Ekle',
+        btn_add_skill: '+ Yetkinlik Ekle',
+        btn_add_system: '+ Sistem Ekle',
+        btn_add_tech: '+ Teknik Ekle',
+        btn_add_bullet: '+ Madde Ekle',
+        btn_cancel: 'İptal',
+        btn_create: 'Oluştur',
+        btn_done: 'Tamam',
+        btn_undo: 'Geri',
+        btn_redo: 'İleri',
+        btn_save: 'Kaydet',
+        btn_text: 'Metin',
+        btn_fit: 'Sığdır',
+        lbl_name: 'Ad Soyad',
+        lbl_title: 'Unvan',
+        lbl_summary: 'Özet metin',
+        lbl_location: 'Konum',
+        lbl_phone: 'Telefon',
+        lbl_email: 'E-posta',
+        lbl_birth: 'Doğum tarihi',
+        lbl_language: 'Yabancı Dil',
+        lbl_license: 'Ehliyet',
+        lbl_military: 'Askerlik',
+        lbl_heading: 'Başlık',
+        lbl_bullets: 'Maddeler',
+        lbl_license_pv: 'Ehliyet',
+        lbl_military_pv: 'Askerlik',
+        lbl_language_pv: 'Dil',
+        modal_new_section: 'Yeni Sidebar Başlığı',
+        title_fullscreen: 'Tam ekran düzenle',
+        title_fab: 'Sidebar başlığı ekle',
+        title_fit: 'Ekrana sığdır',
+        title_undo: 'Geri',
+        title_redo: 'İleri',
+        ph_certificates: 'Örn. Sertifikalar',
+        ph_text: 'Metni buraya yazın…',
+        status_saved: '✓ Kaydedildi',
+        status_save_err: 'Kayıt hatası',
+        status_loaded_db: 'Veri yüklendi (DB)',
+        status_migrated: 'Veri taşındı (IndexedDB)',
+        status_new: 'Yeni CV',
+        status_loaded_backup: 'Veri yüklendi (yedek)',
+        status_load_err: 'Yükleme hatası, varsayılan açıldı',
+        status_undo: '↩ Geri alındı',
+        status_redo: '↪ İleri alındı',
+        status_no_undo: 'Geri alınacak işlem yok',
+        status_no_redo: 'İleri alınacak işlem yok',
+        status_cleared: 'Veri temizlendi',
+        status_reset: 'Varsayılana dönüldü',
+        status_lang: 'Dil: Türkçe'
+    },
+    en: {
+        tab_edit: '✏️ Edit',
+        tab_preview: '👁️ Preview',
+        panel_pro: 'Professional',
+        panel_sidebar: 'Sidebar',
+        panel_appearance: 'Appearance',
+        sec_identity: 'Identity & Photo',
+        sec_summary: 'Professional Summary',
+        sec_experience: 'Work Experience',
+        sec_contact: 'Contact',
+        sec_education: 'Education',
+        sec_skills: 'Skills',
+        sec_systems: 'Systems Expertise',
+        sec_technical: 'Technical Skills',
+        sec_appearance: 'Appearance Settings',
+        btn_photo: 'Choose Photo',
+        btn_remove: 'Remove',
+        btn_add_exp: '+ Add Experience',
+        btn_add_edu: '+ Add Education',
+        btn_add_skill: '+ Add Skill',
+        btn_add_system: '+ Add System',
+        btn_add_tech: '+ Add Technical',
+        btn_add_bullet: '+ Add Bullet',
+        btn_cancel: 'Cancel',
+        btn_create: 'Create',
+        btn_done: 'Done',
+        btn_undo: 'Undo',
+        btn_redo: 'Redo',
+        btn_save: 'Save',
+        btn_text: 'Text',
+        btn_fit: 'Fit',
+        lbl_name: 'Full Name',
+        lbl_title: 'Job Title',
+        lbl_summary: 'Summary',
+        lbl_location: 'Location',
+        lbl_phone: 'Phone',
+        lbl_email: 'Email',
+        lbl_birth: 'Date of birth',
+        lbl_language: 'Language',
+        lbl_license: 'Driving license',
+        lbl_military: 'Military service',
+        lbl_heading: 'Heading',
+        lbl_bullets: 'Bullets',
+        lbl_license_pv: 'License',
+        lbl_military_pv: 'Military',
+        lbl_language_pv: 'Language',
+        modal_new_section: 'New Sidebar Section',
+        title_fullscreen: 'Full-screen edit',
+        title_fab: 'Add sidebar section',
+        title_fit: 'Fit to screen',
+        title_undo: 'Undo',
+        title_redo: 'Redo',
+        ph_certificates: 'e.g. Certificates',
+        ph_text: 'Type your text here…',
+        status_saved: '✓ Saved',
+        status_save_err: 'Save failed',
+        status_loaded_db: 'Data loaded (DB)',
+        status_migrated: 'Data migrated (IndexedDB)',
+        status_new: 'New CV',
+        status_loaded_backup: 'Data loaded (backup)',
+        status_load_err: 'Load failed, defaults opened',
+        status_undo: '↩ Undone',
+        status_redo: '↪ Redone',
+        status_no_undo: 'Nothing to undo',
+        status_no_redo: 'Nothing to redo',
+        status_cleared: 'Data cleared',
+        status_reset: 'Reset to defaults',
+        status_lang: 'Language: English'
+    }
+};
+
+function t(key) {
+    try {
+        var pack = I18N[appLang] || I18N.tr;
+        if (pack[key] != null) return pack[key];
+        if (I18N.tr[key] != null) return I18N.tr[key];
+        return key;
+    } catch (e) {
+        return key;
+    }
+}
+
+function applyI18n() {
+    try {
+        document.documentElement.lang = appLang === 'en' ? 'en' : 'tr';
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+            var key = el.getAttribute('data-i18n');
+            if (!key) return;
+            el.textContent = t(key);
+        });
+        document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+            var key = el.getAttribute('data-i18n-title');
+            if (key) el.setAttribute('title', t(key));
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+            var key = el.getAttribute('data-i18n-placeholder');
+            if (key) el.setAttribute('placeholder', t(key));
+        });
+        var trBtn = document.getElementById('langTR');
+        var enBtn = document.getElementById('langEN');
+        if (trBtn) trBtn.classList.toggle('active', appLang === 'tr');
+        if (enBtn) enBtn.classList.toggle('active', appLang === 'en');
+        document.title = appLang === 'en' ? 'CV Maker' : 'CV Hazırlama Programı';
+    } catch (e) {
+        console.error('applyI18n:', e);
+    }
+}
+
+function setLang(lang) {
+    try {
+        appLang = (lang === 'en') ? 'en' : 'tr';
+        try { localStorage.setItem(LANG_KEY, appLang); } catch (e0) { /* ignore */ }
+        applyI18n();
+        // Önizleme kişisel etiketlerini yenile
+        try { if (typeof applyToPreview === 'function') applyToPreview(); } catch (e1) { /* ignore */ }
+        showStatus(t('status_lang'));
+    } catch (e) {
+        console.error('setLang:', e);
+    }
+}
+
+function initLang() {
+    try {
+        var saved = null;
+        try { saved = localStorage.getItem(LANG_KEY); } catch (e0) { /* ignore */ }
+        if (saved === 'en' || saved === 'tr') {
+            appLang = saved;
+        } else if (navigator.language && navigator.language.toLowerCase().indexOf('en') === 0) {
+            appLang = 'en';
+        } else {
+            appLang = 'tr';
+        }
+        applyI18n();
+    } catch (e) {
+        appLang = 'tr';
+        applyI18n();
+    }
+}
 
 /* ---------- IndexedDB ---------- */
 function idbOpen() {
@@ -2193,7 +2432,7 @@ function pushHistory() {
 function undoCV() {
     try {
         if (historyIndex <= 0) {
-            showStatus('Geri alınacak işlem yok', true);
+            showStatus(t('status_no_undo'), true);
             return;
         }
         isRestoring = true;
@@ -2204,18 +2443,18 @@ function undoCV() {
         persistData();
         isRestoring = false;
         updateUndoRedoButtons();
-        showStatus('↩ Geri alındı');
+        showStatus(t('status_undo'));
     } catch (e) {
         isRestoring = false;
         console.error('undoCV:', e);
-        showStatus('Geri alma hatası', true);
+        showStatus(t('status_no_undo'), true);
     }
 }
 
 function redoCV() {
     try {
         if (historyIndex >= historyStack.length - 1) {
-            showStatus('İleri alınacak işlem yok', true);
+            showStatus(t('status_no_redo'), true);
             return;
         }
         isRestoring = true;
@@ -2226,11 +2465,11 @@ function redoCV() {
         persistData();
         isRestoring = false;
         updateUndoRedoButtons();
-        showStatus('↪ İleri alındı');
+        showStatus(t('status_redo'));
     } catch (e) {
         isRestoring = false;
         console.error('redoCV:', e);
-        showStatus('İleri alma hatası', true);
+        showStatus(t('status_no_redo'), true);
     }
 }
 
@@ -2330,10 +2569,10 @@ function saveCV(skipHistory) {
         if (!skipHistory) pushHistory();
         persistData();
         updateCounts();
-        showStatus('✓ Kaydedildi');
+        showStatus(t('status_saved'));
     } catch (e) {
         console.error('saveCV:', e);
-        showStatus('Kayıt hatası', true);
+        showStatus(t('status_save_err'), true);
     }
 }
 
@@ -2369,7 +2608,7 @@ function loadCV() {
         idbGet(STORAGE_KEY).then(function (fromIdb) {
             if (fromIdb && typeof fromIdb === 'object') {
                 applyLoadedObject(fromIdb);
-                showStatus('Veri yüklendi (DB)');
+                showStatus(t('status_loaded_db'));
                 return;
             }
             // Eski localStorage kaydını taşı
@@ -2380,35 +2619,35 @@ function loadCV() {
                     var parsed = JSON.parse(raw);
                     applyLoadedObject(parsed);
                     persistData(); // IDB'ye yaz
-                    showStatus('Veri taşındı (IndexedDB)');
+                    showStatus(t('status_migrated'));
                     return;
                 } catch (e1) {
                     console.warn('localStorage parse hatası', e1);
                 }
             }
             applyLoadedObject(null);
-            showStatus('Yeni CV');
+            showStatus(t('status_new'));
         }).catch(function (err) {
             console.warn('IDB yükleme, localStorage deneniyor:', err);
             try {
                 var raw2 = localStorage.getItem(STORAGE_KEY);
                 if (raw2) {
                     applyLoadedObject(JSON.parse(raw2));
-                    showStatus('Veri yüklendi (yedek)');
+                    showStatus(t('status_loaded_backup'));
                 } else {
                     applyLoadedObject(null);
-                    showStatus('Yeni CV');
+                    showStatus(t('status_new'));
                 }
             } catch (e2) {
                 console.error('loadCV fallback:', e2);
                 applyLoadedObject(null);
-                showStatus('Yükleme hatası, varsayılan açıldı', true);
+                showStatus(t('status_load_err'), true);
             }
         });
     } catch (e) {
         console.error('loadCV:', e);
         applyLoadedObject(null);
-        showStatus('Yükleme hatası, varsayılan açıldı', true);
+        showStatus(t('status_load_err'), true);
     }
 }
 
@@ -2421,16 +2660,18 @@ function resetCV() {
         applyToPreview();
         persistData();
         pushHistory();
-        showStatus('Varsayılana dönüldü');
+        showStatus(t('status_reset'));
     } catch (e) {
         console.error('resetCV:', e);
-        showStatus('Sıfırlama hatası', true);
+        showStatus(t('status_load_err'), true);
     }
 }
 
 function clearAllData() {
     try {
-        if (!confirm('Tüm kayıtlı CV verisi silinecek (IndexedDB + yedek). Emin misiniz?')) return;
+        if (!confirm(appLang === 'en'
+            ? 'All saved CV data will be deleted (IndexedDB + backup). Continue?'
+            : 'Tüm kayıtlı CV verisi silinecek (IndexedDB + yedek). Emin misiniz?')) return;
         try { localStorage.removeItem(STORAGE_KEY); } catch (e0) { /* ignore */ }
         idbDelete(STORAGE_KEY).catch(function () { /* ignore */ });
         cvData = deepClone(defaultData);
@@ -2439,10 +2680,10 @@ function clearAllData() {
         historyStack = [deepClone(cvData)];
         historyIndex = 0;
         updateUndoRedoButtons();
-        showStatus('Veri temizlendi');
+        showStatus(t('status_cleared'));
     } catch (e) {
         console.error('clearAllData:', e);
-        showStatus('Temizleme hatası', true);
+        showStatus(t('status_load_err'), true);
     }
 }
 
@@ -3310,9 +3551,9 @@ function renderSidebarDynamic() {
                     html += '<p style="color:#94a3b8;font-size:9px">' + escapeHtml(e.years || '') + '</p>';
                 });
             } else if (sec.type === 'personal') {
-                if (cvData.personal.language) html += '<p><strong>Yabancı Dil:</strong> ' + escapeHtml(cvData.personal.language) + '</p>';
-                if (cvData.personal.license) html += '<p><strong>Ehliyet:</strong> ' + escapeHtml(cvData.personal.license) + '</p>';
-                if (cvData.personal.military) html += '<p><strong>Askerlik:</strong> ' + escapeHtml(cvData.personal.military) + '</p>';
+                if (cvData.personal.language) html += '<p><strong>' + escapeHtml(t('lbl_language_pv')) + ':</strong> ' + escapeHtml(cvData.personal.language) + '</p>';
+                if (cvData.personal.license) html += '<p><strong>' + escapeHtml(t('lbl_license_pv')) + ':</strong> ' + escapeHtml(cvData.personal.license) + '</p>';
+                if (cvData.personal.military) html += '<p><strong>' + escapeHtml(t('lbl_military_pv')) + ':</strong> ' + escapeHtml(cvData.personal.military) + '</p>';
             } else if (sec.type === 'list' && sec.listKey) {
                 html += '<ul>';
                 (cvData[sec.listKey] || []).forEach(function (item) {
@@ -4249,6 +4490,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!ok) {
             showStatus('Arayüz yüklenemedi', true);
         }
+        initLang();
         loadCV();
         setupEventListeners();
         document.body.classList.add('view-edit', 'edit-panel-pro');
@@ -4259,7 +4501,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     } catch (e) {
         console.error('Başlatma hatası:', e);
-        showStatus('Program başlatılamadı', true);
+        showStatus(appLang === 'en' ? 'App failed to start' : 'Program başlatılamadı', true);
     }
 });
 </script>
