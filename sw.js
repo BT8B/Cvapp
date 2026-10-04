@@ -1,51 +1,74 @@
-/* CV programı – service worker
-   Sürüm değişince CACHE adını artır (v2, v3...) ki eski önbellek temizlensin. */
-const CACHE = 'cv-app-v1';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+/* CV Maker – offline service worker
+   İlk yüklemede uygulama kabuğunu cache'ler; sonra offline açılır.
+*/
+var CACHE = 'cv-app-v3';
+var SHELL = [
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './icon-192.png',
+  './icon-512.png',
+  './sw.js'
+];
 
-self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); }));
-});
-
-self.addEventListener('activate', function (e) {
-  e.waitUntil(
-    caches.keys().then(function (keys) {
-      return Promise.all(keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
-    }).then(function () { return self.clients.claim(); })
+self.addEventListener('install', function (event) {
+  event.waitUntil(
+    caches.open(CACHE).then(function (cache) {
+      return cache.addAll(SHELL.map(function (u) {
+        return new Request(u, { cache: 'reload' });
+      })).catch(function () {
+        // Bazı ikonlar yoksa yine de devam
+        return cache.addAll(['./', './index.html']);
+      });
+    }).then(function () {
+      return self.skipWaiting();
+    })
   );
 });
 
-function cacheable(res) {
-  return res && (res.status === 200 || res.type === 'opaque');
-}
+self.addEventListener('activate', function (event) {
+  event.waitUntil(
+    caches.keys().then(function (keys) {
+      return Promise.all(
+        keys.filter(function (k) { return k !== CACHE; }).map(function (k) {
+          return caches.delete(k);
+        })
+      );
+    }).then(function () {
+      return self.clients.claim();
+    })
+  );
+});
 
-self.addEventListener('fetch', function (e) {
-  var req = e.request;
-  if (req.method !== 'GET') return;
-  var url = new URL(req.url);
-  if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+self.addEventListener('fetch', function (event) {
+  if (event.request.method !== 'GET') return;
 
-  // Sayfanın kendisi: önce ağ (güncelleme gelsin), olmazsa önbellek
-  if (req.mode === 'navigate') {
-    e.respondWith(
-      fetch(req).then(function (res) {
-        if (cacheable(res)) { var copy = res.clone(); caches.open(CACHE).then(function (c) { c.put('./index.html', copy); }); }
+  var url = event.request.url;
+
+  // Sadece aynı origin + bilinen CDN
+  var sameOrigin = url.indexOf(self.location.origin) === 0;
+  var cdn = url.indexOf('cdnjs.cloudflare.com') !== -1 ||
+            url.indexOf('fonts.googleapis.com') !== -1 ||
+            url.indexOf('fonts.gstatic.com') !== -1;
+
+  if (!sameOrigin && !cdn) return;
+
+  event.respondWith(
+    caches.match(event.request).then(function (cached) {
+      var networkFetch = fetch(event.request).then(function (res) {
+        if (res && res.ok) {
+          var clone = res.clone();
+          caches.open(CACHE).then(function (cache) {
+            try { cache.put(event.request, clone); } catch (e) { /* ignore */ }
+          });
+        }
         return res;
       }).catch(function () {
-        return caches.match('./index.html').then(function (r) { return r || caches.match('./'); });
-      })
-    );
-    return;
-  }
+        return cached || caches.match('./index.html');
+      });
 
-  // Diğer dosyalar (ikonlar, PDF kütüphaneleri, fontlar): önbellekten ver, arkada yenile
-  e.respondWith(
-    caches.match(req).then(function (cached) {
-      var net = fetch(req).then(function (res) {
-        if (cacheable(res)) { var copy = res.clone(); caches.open(CACHE).then(function (c) { c.put(req, copy); }); }
-        return res;
-      }).catch(function () { return cached; });
-      return cached || net;
+      // Cache-first: offline için önce cache
+      return cached || networkFetch;
     })
   );
 });

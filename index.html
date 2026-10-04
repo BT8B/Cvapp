@@ -1590,11 +1590,101 @@
 <script>
 /* =========================================================
    CV HAZIRLAMA PROGRAMI – Mimari B (Düzenle + Önizle)
-   localStorage: cv_app_data
+   Depolama: IndexedDB (asıl) + localStorage (yedek/geçiş)
+   Offline: service worker sw.js
    ========================================================= */
 
 const STORAGE_KEY = 'cv_app_data';
+const IDB_NAME = 'cv_app_db';
+const IDB_STORE = 'kv';
+const IDB_VERSION = 1;
 const MAX_HISTORY = 30;
+
+/* ---------- IndexedDB ---------- */
+function idbOpen() {
+    return new Promise(function (resolve, reject) {
+        try {
+            if (!window.indexedDB) {
+                reject(new Error('IndexedDB yok'));
+                return;
+            }
+            var req = indexedDB.open(IDB_NAME, IDB_VERSION);
+            req.onupgradeneeded = function () {
+                var db = req.result;
+                if (!db.objectStoreNames.contains(IDB_STORE)) {
+                    db.createObjectStore(IDB_STORE);
+                }
+            };
+            req.onsuccess = function () { resolve(req.result); };
+            req.onerror = function () { reject(req.error || new Error('IDB open hata')); };
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+function idbSet(key, value) {
+    return idbOpen().then(function (db) {
+        return new Promise(function (resolve, reject) {
+            try {
+                var tx = db.transaction(IDB_STORE, 'readwrite');
+                tx.objectStore(IDB_STORE).put(value, key);
+                tx.oncomplete = function () { resolve(true); };
+                tx.onerror = function () { reject(tx.error); };
+            } catch (e) {
+                reject(e);
+            }
+        });
+    });
+}
+
+function idbGet(key) {
+    return idbOpen().then(function (db) {
+        return new Promise(function (resolve, reject) {
+            try {
+                var tx = db.transaction(IDB_STORE, 'readonly');
+                var req = tx.objectStore(IDB_STORE).get(key);
+                req.onsuccess = function () { resolve(req.result); };
+                req.onerror = function () { reject(req.error); };
+            } catch (e) {
+                reject(e);
+            }
+        });
+    });
+}
+
+function idbDelete(key) {
+    return idbOpen().then(function (db) {
+        return new Promise(function (resolve, reject) {
+            try {
+                var tx = db.transaction(IDB_STORE, 'readwrite');
+                tx.objectStore(IDB_STORE).delete(key);
+                tx.oncomplete = function () { resolve(true); };
+                tx.onerror = function () { reject(tx.error); };
+            } catch (e) {
+                reject(e);
+            }
+        });
+    });
+}
+
+/** Asıl kayıt: IndexedDB + localStorage yedek */
+function persistData() {
+    try {
+        if (!cvData) return;
+        var json = JSON.stringify(cvData);
+        try {
+            localStorage.setItem(STORAGE_KEY, json);
+        } catch (e1) {
+            console.warn('localStorage yedek yazılamadı:', e1);
+        }
+        idbSet(STORAGE_KEY, cvData).catch(function (e2) {
+            console.warn('IndexedDB yazılamadı:', e2);
+        });
+    } catch (e) {
+        console.error('persistData:', e);
+    }
+}
 
 const defaultData = {
     personal: {
@@ -2111,7 +2201,7 @@ function undoCV() {
         cvData = deepClone(historyStack[historyIndex]);
         applyToEditor();
         applyToPreview();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
+        persistData();
         isRestoring = false;
         updateUndoRedoButtons();
         showStatus('↩ Geri alındı');
@@ -2133,7 +2223,7 @@ function redoCV() {
         cvData = deepClone(historyStack[historyIndex]);
         applyToEditor();
         applyToPreview();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
+        persistData();
         isRestoring = false;
         updateUndoRedoButtons();
         showStatus('↪ İleri alındı');
@@ -2238,8 +2328,7 @@ function saveCV(skipHistory) {
     try {
         collectFromEditor();
         if (!skipHistory) pushHistory();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
-        // Sayaçları güncelle
+        persistData();
         updateCounts();
         showStatus('✓ Kaydedildi');
     } catch (e) {
@@ -2259,35 +2348,66 @@ function scheduleSave() {
     }
 }
 
+function applyLoadedObject(parsed) {
+    cvData = deepClone(defaultData);
+    if (parsed && typeof parsed === 'object') {
+        Object.keys(parsed).forEach(function (k) {
+            if (parsed[k] !== undefined) cvData[k] = parsed[k];
+        });
+    }
+    sanitizeStoredData();
+    applyToEditor();
+    applyToPreview();
+    historyStack = [deepClone(cvData)];
+    historyIndex = 0;
+    updateUndoRedoButtons();
+}
+
 function loadCV() {
     try {
-        var raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-            var parsed = JSON.parse(raw);
-            cvData = deepClone(defaultData);
-            // sığ merge
-            Object.keys(parsed).forEach(function (k) {
-                if (parsed[k] !== undefined) cvData[k] = parsed[k];
-            });
-        } else {
-            cvData = deepClone(defaultData);
-        }
-        sanitizeStoredData();
-        applyToEditor();
-        applyToPreview();
-        historyStack = [deepClone(cvData)];
-        historyIndex = 0;
-        updateUndoRedoButtons();
-        showStatus('Veri yüklendi');
+        // 1) IndexedDB dene → 2) localStorage geçiş → 3) varsayılan
+        idbGet(STORAGE_KEY).then(function (fromIdb) {
+            if (fromIdb && typeof fromIdb === 'object') {
+                applyLoadedObject(fromIdb);
+                showStatus('Veri yüklendi (DB)');
+                return;
+            }
+            // Eski localStorage kaydını taşı
+            var raw = null;
+            try { raw = localStorage.getItem(STORAGE_KEY); } catch (e0) { /* ignore */ }
+            if (raw) {
+                try {
+                    var parsed = JSON.parse(raw);
+                    applyLoadedObject(parsed);
+                    persistData(); // IDB'ye yaz
+                    showStatus('Veri taşındı (IndexedDB)');
+                    return;
+                } catch (e1) {
+                    console.warn('localStorage parse hatası', e1);
+                }
+            }
+            applyLoadedObject(null);
+            showStatus('Yeni CV');
+        }).catch(function (err) {
+            console.warn('IDB yükleme, localStorage deneniyor:', err);
+            try {
+                var raw2 = localStorage.getItem(STORAGE_KEY);
+                if (raw2) {
+                    applyLoadedObject(JSON.parse(raw2));
+                    showStatus('Veri yüklendi (yedek)');
+                } else {
+                    applyLoadedObject(null);
+                    showStatus('Yeni CV');
+                }
+            } catch (e2) {
+                console.error('loadCV fallback:', e2);
+                applyLoadedObject(null);
+                showStatus('Yükleme hatası, varsayılan açıldı', true);
+            }
+        });
     } catch (e) {
         console.error('loadCV:', e);
-        cvData = deepClone(defaultData);
-        sanitizeStoredData();
-        applyToEditor();
-        applyToPreview();
-        historyStack = [deepClone(cvData)];
-        historyIndex = 0;
-        updateUndoRedoButtons();
+        applyLoadedObject(null);
         showStatus('Yükleme hatası, varsayılan açıldı', true);
     }
 }
@@ -2299,7 +2419,7 @@ function resetCV() {
         cvData = deepClone(defaultData);
         applyToEditor();
         applyToPreview();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
+        persistData();
         pushHistory();
         showStatus('Varsayılana dönüldü');
     } catch (e) {
@@ -2310,8 +2430,9 @@ function resetCV() {
 
 function clearAllData() {
     try {
-        if (!confirm('localStorage tamamen temizlenecek. Emin misiniz?')) return;
-        localStorage.removeItem(STORAGE_KEY);
+        if (!confirm('Tüm kayıtlı CV verisi silinecek (IndexedDB + yedek). Emin misiniz?')) return;
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e0) { /* ignore */ }
+        idbDelete(STORAGE_KEY).catch(function () { /* ignore */ });
         cvData = deepClone(defaultData);
         applyToEditor();
         applyToPreview();
@@ -2484,7 +2605,7 @@ function applyImportedData(obj) {
         sanitizeStoredData();
         applyToEditor();
         applyToPreview();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
+        persistData();
         pushHistory();
         showStatus('✓ Yedek yüklendi');
         return true;
