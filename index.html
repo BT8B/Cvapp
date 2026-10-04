@@ -123,9 +123,16 @@
             cursor: pointer;
         }
         .lang-switch button.active {
-            background: #fff;
-            color: #0f172a;
-            box-shadow: 0 1px 3px rgba(15,23,42,0.1);
+            background: linear-gradient(180deg, #0ea5e9, #0284c7) !important;
+            color: #fff !important;
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+        }
+        .lang-switch button:not(.active) {
+            background: transparent;
+            color: #64748b;
+        }
+        .lang-switch button:not(.active):active {
+            background: #dbe7f3;
         }
 
         /* Segment: Düzenle / Önizle */
@@ -1201,8 +1208,8 @@
             <button type="button" id="tabPreview" onclick="switchView('preview')" data-i18n="tab_preview">👁️ Önizle</button>
         </div>
         <div class="lang-switch" role="group" aria-label="Language">
-            <button type="button" id="langTR" class="active" onclick="setLang('tr')">TR</button>
-            <button type="button" id="langEN" onclick="setLang('en')">EN</button>
+            <button type="button" id="langTR" class="active" aria-pressed="true" onclick="setLang('tr')">TR</button>
+            <button type="button" id="langEN" aria-pressed="false" onclick="setLang('en')">EN</button>
         </div>
     </div>
 </header>
@@ -1306,7 +1313,7 @@
                     <label data-i18n="lbl_birth">Doğum tarihi</label>
                     <input type="date" id="f_birthDate">
                     <div id="ageDisplay" style="margin-top:6px;font-size:13px;color:#0284c7;font-weight:600;"></div>
-                    <p style="font-size:11px;color:#94a3b8;margin-top:4px;">Takvimden seçin; yaş otomatik hesaplanır.</p>
+                    <p style="font-size:11px;color:#94a3b8;margin-top:4px;" data-i18n="hint_birth">Takvimden seçin; yaş otomatik hesaplanır.</p>
                 </div>
                 </div>
         </div>
@@ -1314,7 +1321,7 @@
         <!-- Kişisel -->
         <div class="acc-item" data-sid="personal">
             <div class="acc-header" onclick="toggleAcc(this)">
-                <span class="acc-title" data-sid-title="personal">Kişisel</span>
+                <span class="acc-title" data-sid-title="personal" data-i18n="sec_personal">Kişisel</span>
                 <span class="acc-tools" data-sid-tools="personal"></span>
                 <span class="acc-chevron">▶</span>
             </div>
@@ -1404,107 +1411,107 @@
             </div>
             <div class="acc-body">
                 <div class="color-row">
-                    <label>Sidebar rengi</label>
+                    <label data-i18n="lbl_sidebar_color">Sidebar rengi</label>
                     <input type="color" id="sidebarColor" value="#1e293b">
                 </div>
                 <div class="color-row">
-                    <label>Vurgu rengi</label>
+                    <label data-i18n="lbl_accent_color">Vurgu rengi</label>
                     <input type="color" id="accentColor" value="#38bdf8">
                 </div>
                 <div class="form-group" style="margin-top:10px;">
-                    <label>CV yazı tipi</label>
+                    <label data-i18n="lbl_font">CV yazı tipi</label>
                     <select id="fontFamily" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
-                        <option value="Inter">Inter (modern, net)</option>
-                        <option value="Source Sans 3">Source Sans 3 (yumuşak)</option>
-                        <option value="Libre Baskerville">Libre Baskerville (klasik)</option>
-                        <option value="Segoe UI">Sistem (Segoe / sistem)</option>
+                        <option value="Inter" data-i18n="opt_font_inter">Inter (modern, net)</option>
+                        <option value="Source Sans 3" data-i18n="opt_font_source">Source Sans 3 (yumuşak)</option>
+                        <option value="Libre Baskerville" data-i18n="opt_font_libre">Libre Baskerville (klasik)</option>
+                        <option value="Segoe UI" data-i18n="opt_font_system">Sistem (Segoe / sistem)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Yazı boyutu</label>
+                    <label data-i18n="lbl_font_size">Yazı boyutu</label>
                     <select id="fontSize" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
-                        <option value="compact">Sıkı (çok içerik / tek sayfa)</option>
-                        <option value="normal" selected>Normal (önerilen)</option>
-                        <option value="comfortable">Rahat (daha okunaklı)</option>
+                        <option value="compact" data-i18n="opt_size_compact">Sıkı (çok içerik / tek sayfa)</option>
+                        <option value="normal" selected data-i18n="opt_size_normal">Normal (önerilen)</option>
+                        <option value="comfortable" data-i18n="opt_size_comfort">Rahat (daha okunaklı)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Sidebar stili</label>
+                    <label data-i18n="lbl_sidebar_style">Sidebar stili</label>
                     <select id="sidebarStyle" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
-                        <option value="solid-dark">Düz koyu</option>
-                        <option value="solid-light">Düz açık</option>
-                        <option value="top-band">Üst bant</option>
-                        <option value="accent-line">Sol vurgu çizgisi</option>
+                        <option value="solid-dark" data-i18n="opt_style_dark">Düz koyu</option>
+                        <option value="solid-light" data-i18n="opt_style_light">Düz açık</option>
+                        <option value="top-band" data-i18n="opt_style_band">Üst bant</option>
+                        <option value="accent-line" data-i18n="opt_style_line">Sol vurgu çizgisi</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Fotoğraf konumu</label>
+                    <label data-i18n="lbl_photo_pos">Fotoğraf konumu</label>
                     <select id="photoPosition" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
-                        <option value="top">Sidebar üst (orta)</option>
-                        <option value="top-left">Sidebar üst (sol)</option>
-                        <option value="header">İsim yanı (sol)</option>
+                        <option value="top" data-i18n="opt_pos_top">Sidebar üst (orta)</option>
+                        <option value="top-left" data-i18n="opt_pos_left">Sidebar üst (sol)</option>
+                        <option value="header" data-i18n="opt_pos_header">İsim yanı (sol)</option>
                     </select>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Foto şekli</label>
+                        <label data-i18n="lbl_photo_shape">Foto şekli</label>
                         <select id="photoShape" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
-                            <option value="circle">Yuvarlak</option>
-                            <option value="rounded">Yuvarlatılmış</option>
-                            <option value="square">Kare</option>
+                            <option value="circle" data-i18n="opt_shape_circle">Yuvarlak</option>
+                            <option value="rounded" data-i18n="opt_shape_rounded">Yuvarlatılmış</option>
+                            <option value="square" data-i18n="opt_shape_square">Kare</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Foto çerçevesi</label>
+                        <label data-i18n="lbl_photo_border">Foto çerçevesi</label>
                         <select id="photoBorder" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
-                            <option value="accent">Vurgu rengi</option>
-                            <option value="white">Beyaz</option>
-                            <option value="none">Yok</option>
+                            <option value="accent" data-i18n="opt_border_accent">Vurgu rengi</option>
+                            <option value="white" data-i18n="opt_border_white">Beyaz</option>
+                            <option value="none" data-i18n="opt_border_none">Yok</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Sayfa çerçevesi</label>
+                        <label data-i18n="lbl_page_frame">Sayfa çerçevesi</label>
                         <select id="pageFrame" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
-                            <option value="off">Kapalı</option>
-                            <option value="on">Açık (ince)</option>
+                            <option value="off" data-i18n="opt_frame_off">Kapalı</option>
+                            <option value="on" data-i18n="opt_frame_on">Açık (ince)</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Çerçeve rengi</label>
+                        <label data-i18n="lbl_frame_color">Çerçeve rengi</label>
                         <input type="color" id="frameColor" value="#cbd5e1" style="width:100%;height:44px;border:1px solid #e2e8f0;border-radius:8px;padding:4px;">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>PDF sığdırma</label>
+                    <label data-i18n="lbl_pdf_fit">PDF sığdırma</label>
                     <select id="pdfFit" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;min-height:44px;background:#fff;">
-                        <option value="fit">Sığdır (tek sayfa, gerekirse küçült)</option>
-                        <option value="natural">Doğal (boşluk kalabilir)</option>
-                        <option value="compact">Sıkı (daha küçük yazı)</option>
+                        <option value="fit" data-i18n="opt_pdf_fit">Sığdır (tek sayfa, gerekirse küçült)</option>
+                        <option value="natural" data-i18n="opt_pdf_natural">Doğal (boşluk kalabilir)</option>
+                        <option value="compact" data-i18n="opt_pdf_compact">Sıkı (daha küçük yazı)</option>
                     </select>
                 </div>
-                <p style="font-size:11px;color:#94a3b8;margin-bottom:10px;">Değişiklikler Önizle’de anında görünür ve kaydedilir.</p>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="resetCV()">↺ Varsayılana Dön</button>
-                <button type="button" class="btn btn-danger btn-sm" style="margin-left:6px" onclick="clearAllData()">🗑 Tüm Veriyi Sil</button>
+                <p style="font-size:11px;color:#94a3b8;margin-bottom:10px;" data-i18n="hint_preview_live">Değişiklikler Önizle’de anında görünür ve kaydedilir.</p>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="resetCV()" data-i18n="btn_reset">↺ Varsayılana Dön</button>
+                <button type="button" class="btn btn-danger btn-sm" style="margin-left:6px" onclick="clearAllData()" data-i18n="btn_clear_all">🗑 Tüm Veriyi Sil</button>
             </div>
         </div>
 
-        <div class="acc-item open" data-section="backup">
+        <div class="acc-item" data-section="backup">
             <div class="acc-header" onclick="toggleAcc(this)">
-                <span class="acc-title">Yedekle / Aktar</span>
+                <span class="acc-title" data-i18n="sec_backup">Yedekle / Aktar</span>
                 <span class="acc-chevron">▶</span>
             </div>
             <div class="acc-body">
-                <p style="font-size:12px;color:#64748b;margin-bottom:10px;">JSON yedeği tüm CV verisini taşır. <b>📄 PDF</b> butonuyla aldığın PDF'in içine de CV verisi gizlice gömülür, o PDF'i buradan geri yükleyebilirsin. <b>Metin PDF</b>'e veri gömülemez, onu geri yükleyemezsin.</p>
-                <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:6px;">Dışa aktar</label>
-                <button type="button" class="btn btn-secondary" style="width:100%;margin-bottom:8px;" onclick="exportJSON()">💾 JSON yedeği indir</button>
-                <button type="button" class="btn btn-secondary" style="width:100%;margin-bottom:14px;" onclick="downloadPDF()">📄 PDF indir (veri gömülü)</button>
-                <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:6px;">İçe aktar</label>
+                <p style="font-size:12px;color:#64748b;margin-bottom:10px;" data-i18n="hint_backup">JSON yedeği tüm CV verisini taşır. PDF butonuyla aldığın PDF’in içine de CV verisi gömülür; o PDF’i buradan geri yükleyebilirsin. Metin PDF’e veri gömülemez.</p>
+                <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:6px;" data-i18n="lbl_export">Dışa aktar</label>
+                <button type="button" class="btn btn-secondary" style="width:100%;margin-bottom:8px;" onclick="exportJSON()" data-i18n="btn_export_json">💾 JSON yedeği indir</button>
+                <button type="button" class="btn btn-secondary" style="width:100%;margin-bottom:14px;" onclick="downloadPDF()" data-i18n="btn_export_pdf">📄 PDF indir (veri gömülü)</button>
+                <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:6px;" data-i18n="lbl_import">İçe aktar</label>
                 <input type="file" id="importJsonInput" accept=".json,application/json" style="display:none" onchange="importJSONFile(event)">
                 <input type="file" id="importPdfInput" accept=".pdf,application/pdf" style="display:none" onchange="importPDFFile(event)">
-                <button type="button" class="btn btn-secondary" style="width:100%;margin-bottom:8px;" onclick="document.getElementById('importJsonInput').click()">📂 JSON yedeğinden yükle</button>
-                <button type="button" class="btn btn-secondary" style="width:100%;" onclick="document.getElementById('importPdfInput').click()">📂 PDF'ten yükle</button>
+                <button type="button" class="btn btn-secondary" style="width:100%;margin-bottom:8px;" onclick="document.getElementById('importJsonInput').click()" data-i18n="btn_import_json">📂 JSON yedeğinden yükle</button>
+                <button type="button" class="btn btn-secondary" style="width:100%;" onclick="document.getElementById('importPdfInput').click()" data-i18n="btn_import_pdf">📂 PDF'ten yükle</button>
             </div>
         </div>
 
@@ -1517,9 +1524,9 @@
 <div id="previewView" class="view">
     <div class="zoom-bar">
         <div class="zoom-bar-inner">
-            <button type="button" class="btn" onclick="zoomPreview(-1)" title="Küçült">−</button>
+            <button type="button" class="btn" onclick="zoomPreview(-1)" title="Küçült" data-i18n-title="title_zoom_out">−</button>
             <span class="zoom-label" id="zoomLabel">100%</span>
-            <button type="button" class="btn" onclick="zoomPreview(1)" title="Büyüt">+</button>
+            <button type="button" class="btn" onclick="zoomPreview(1)" title="Büyüt" data-i18n-title="title_zoom_in">+</button>
             <button type="button" class="btn btn-fit" onclick="zoomPreview(0)" title="Ekrana sığdır" data-i18n="btn_fit" data-i18n-title="title_fit">Sığdır</button>
         </div>
     </div>
@@ -1677,12 +1684,97 @@ var I18N = {
         lbl_license_pv: 'Ehliyet',
         lbl_military_pv: 'Askerlik',
         lbl_language_pv: 'Dil',
+        sec_personal: 'Kişisel',
+        sec_backup: 'Yedekle / Aktar',
+        hint_birth: 'Takvimden seçin; yaş otomatik hesaplanır.',
+        hint_preview_live: 'Değişiklikler Önizle’de anında görünür ve kaydedilir.',
+        hint_backup: 'JSON yedeği tüm CV verisini taşır. PDF butonuyla aldığın PDF’in içine de CV verisi gömülür; o PDF’i buradan geri yükleyebilirsin. Metin PDF’e veri gömülemez.',
+        lbl_sidebar_color: 'Sidebar rengi',
+        lbl_accent_color: 'Vurgu rengi',
+        lbl_font: 'CV yazı tipi',
+        lbl_font_size: 'Yazı boyutu',
+        lbl_sidebar_style: 'Sidebar stili',
+        lbl_photo_pos: 'Fotoğraf konumu',
+        lbl_photo_shape: 'Foto şekli',
+        lbl_photo_border: 'Foto çerçevesi',
+        lbl_page_frame: 'Sayfa çerçevesi',
+        lbl_frame_color: 'Çerçeve rengi',
+        lbl_pdf_fit: 'PDF sığdırma',
+        lbl_export: 'Dışa aktar',
+        lbl_import: 'İçe aktar',
+        lbl_company: 'Şirket',
+        lbl_role: 'Pozisyon / Ünvan',
+        lbl_start: 'Başlangıç',
+        lbl_end: 'Bitiş',
+        lbl_still_working: 'Hâlâ çalışıyorum',
+        lbl_school: 'Okul',
+        lbl_degree: 'Bölüm / Derece',
+        lbl_start_year: 'Başlangıç yılı',
+        lbl_end_year: 'Bitiş yılı',
+        lbl_section_title: 'Başlık adı',
+        btn_reset: '↺ Varsayılana Dön',
+        btn_clear_all: '🗑 Tüm Veriyi Sil',
+        btn_export_json: '💾 JSON yedeği indir',
+        btn_export_pdf: '📄 PDF indir (veri gömülü)',
+        btn_import_json: '📂 JSON yedeğinden yükle',
+        btn_import_pdf: '📂 PDF\'ten yükle',
+        btn_back_list: '← Listeye Dön',
+        btn_add_bullet_short: '+ Madde',
+        btn_delete_exp: 'Bu Deneyimi Sil',
+        btn_delete: 'Sil',
+        btn_hide: 'Gizle',
+        btn_show: 'Göster',
+        opt_font_inter: 'Inter (modern, net)',
+        opt_font_source: 'Source Sans 3 (yumuşak)',
+        opt_font_libre: 'Libre Baskerville (klasik)',
+        opt_font_system: 'Sistem (Segoe / sistem)',
+        opt_size_compact: 'Sıkı (çok içerik / tek sayfa)',
+        opt_size_normal: 'Normal (önerilen)',
+        opt_size_comfort: 'Rahat (daha okunaklı)',
+        opt_style_dark: 'Düz koyu',
+        opt_style_light: 'Düz açık',
+        opt_style_band: 'Üst bant',
+        opt_style_line: 'Sol vurgu çizgisi',
+        opt_pos_top: 'Sidebar üst (orta)',
+        opt_pos_left: 'Sidebar üst (sol)',
+        opt_pos_header: 'İsim yanı (sol)',
+        opt_shape_circle: 'Yuvarlak',
+        opt_shape_rounded: 'Yuvarlatılmış',
+        opt_shape_square: 'Kare',
+        opt_border_accent: 'Vurgu rengi',
+        opt_border_white: 'Beyaz',
+        opt_border_none: 'Yok',
+        opt_frame_off: 'Kapalı',
+        opt_frame_on: 'Açık (ince)',
+        opt_pdf_fit: 'Sığdır (tek sayfa, gerekirse küçült)',
+        opt_pdf_natural: 'Doğal (boşluk kalabilir)',
+        opt_pdf_compact: 'Sıkı (daha küçük yazı)',
+        unit_year: 'Yıl',
+        unit_month: 'Ay',
+        unit_years: 'Yıl',
+        unit_months: 'Ay',
+        unit_age: 'Yaş',
+        txt_present: 'Devam ediyor',
+        txt_duration: 'Süre',
+        txt_duration_hint: 'Tarih seçince süre hesaplanır',
+        txt_edu_duration_hint: 'Yılları girince süre hesaplanır',
+        txt_no_company: 'Şirket adı yok',
+        txt_new_bullet: 'Yeni madde',
+        txt_bullet: 'Madde',
+        txt_age_label: 'Yaş',
+        txt_no_date: 'Tarih seçilmedi',
+        type_skill: 'Yetkinlik',
+        type_system: 'Sistem',
+        type_technical: 'Teknik',
+        type_item: 'Madde',
         modal_new_section: 'Yeni Sidebar Başlığı',
         title_fullscreen: 'Tam ekran düzenle',
         title_fab: 'Sidebar başlığı ekle',
         title_fit: 'Ekrana sığdır',
         title_undo: 'Geri',
         title_redo: 'İleri',
+        title_zoom_out: 'Küçült',
+        title_zoom_in: 'Büyüt',
         ph_certificates: 'Örn. Sertifikalar',
         ph_text: 'Metni buraya yazın…',
         status_saved: '✓ Kaydedildi',
@@ -1746,12 +1838,97 @@ var I18N = {
         lbl_license_pv: 'License',
         lbl_military_pv: 'Military',
         lbl_language_pv: 'Language',
+        sec_personal: 'Personal',
+        sec_backup: 'Backup / Transfer',
+        hint_birth: 'Pick from calendar; age is calculated automatically.',
+        hint_preview_live: 'Changes appear instantly in Preview and are saved.',
+        hint_backup: 'JSON backup carries all CV data. PDFs from the PDF button embed CV data and can be restored here. Text PDF cannot embed data.',
+        lbl_sidebar_color: 'Sidebar color',
+        lbl_accent_color: 'Accent color',
+        lbl_font: 'CV font',
+        lbl_font_size: 'Font size',
+        lbl_sidebar_style: 'Sidebar style',
+        lbl_photo_pos: 'Photo position',
+        lbl_photo_shape: 'Photo shape',
+        lbl_photo_border: 'Photo border',
+        lbl_page_frame: 'Page frame',
+        lbl_frame_color: 'Frame color',
+        lbl_pdf_fit: 'PDF fit',
+        lbl_export: 'Export',
+        lbl_import: 'Import',
+        lbl_company: 'Company',
+        lbl_role: 'Role / Title',
+        lbl_start: 'Start',
+        lbl_end: 'End',
+        lbl_still_working: 'I currently work here',
+        lbl_school: 'School',
+        lbl_degree: 'Degree / Field',
+        lbl_start_year: 'Start year',
+        lbl_end_year: 'End year',
+        lbl_section_title: 'Section title',
+        btn_reset: '↺ Reset to defaults',
+        btn_clear_all: '🗑 Clear all data',
+        btn_export_json: '💾 Download JSON backup',
+        btn_export_pdf: '📄 Download PDF (data embedded)',
+        btn_import_json: '📂 Load from JSON backup',
+        btn_import_pdf: '📂 Load from PDF',
+        btn_back_list: '← Back to list',
+        btn_add_bullet_short: '+ Bullet',
+        btn_delete_exp: 'Delete this job',
+        btn_delete: 'Delete',
+        btn_hide: 'Hide',
+        btn_show: 'Show',
+        opt_font_inter: 'Inter (modern, crisp)',
+        opt_font_source: 'Source Sans 3 (soft)',
+        opt_font_libre: 'Libre Baskerville (classic)',
+        opt_font_system: 'System (Segoe / default)',
+        opt_size_compact: 'Compact (more content / one page)',
+        opt_size_normal: 'Normal (recommended)',
+        opt_size_comfort: 'Comfortable (more readable)',
+        opt_style_dark: 'Solid dark',
+        opt_style_light: 'Solid light',
+        opt_style_band: 'Top band',
+        opt_style_line: 'Left accent line',
+        opt_pos_top: 'Sidebar top (center)',
+        opt_pos_left: 'Sidebar top (left)',
+        opt_pos_header: 'Beside name (left)',
+        opt_shape_circle: 'Circle',
+        opt_shape_rounded: 'Rounded',
+        opt_shape_square: 'Square',
+        opt_border_accent: 'Accent color',
+        opt_border_white: 'White',
+        opt_border_none: 'None',
+        opt_frame_off: 'Off',
+        opt_frame_on: 'On (thin)',
+        opt_pdf_fit: 'Fit (one page, shrink if needed)',
+        opt_pdf_natural: 'Natural (may leave space)',
+        opt_pdf_compact: 'Compact (smaller text)',
+        unit_year: 'yr',
+        unit_month: 'mo',
+        unit_years: 'yrs',
+        unit_months: 'mos',
+        unit_age: 'yo',
+        txt_present: 'Present',
+        txt_duration: 'Duration',
+        txt_duration_hint: 'Duration is calculated when you pick dates',
+        txt_edu_duration_hint: 'Duration is calculated when you enter years',
+        txt_no_company: 'No company name',
+        txt_new_bullet: 'New bullet',
+        txt_bullet: 'Bullet',
+        txt_age_label: 'Age',
+        txt_no_date: 'No date selected',
+        type_skill: 'Skill',
+        type_system: 'System',
+        type_technical: 'Technical',
+        type_item: 'Item',
         modal_new_section: 'New Sidebar Section',
         title_fullscreen: 'Full-screen edit',
         title_fab: 'Add sidebar section',
         title_fit: 'Fit to screen',
         title_undo: 'Undo',
         title_redo: 'Redo',
+        title_zoom_out: 'Zoom out',
+        title_zoom_in: 'Zoom in',
         ph_certificates: 'e.g. Certificates',
         ph_text: 'Type your text here…',
         status_saved: '✓ Saved',
@@ -1782,13 +1959,32 @@ function t(key) {
     }
 }
 
+function builtinSectionI18nKey(id) {
+    var map = {
+        contact: 'sec_contact',
+        education: 'sec_education',
+        skills: 'sec_skills',
+        systems: 'sec_systems',
+        technical: 'sec_technical',
+        personal: 'sec_personal'
+    };
+    return map[id] || null;
+}
+
 function applyI18n() {
     try {
         document.documentElement.lang = appLang === 'en' ? 'en' : 'tr';
         document.querySelectorAll('[data-i18n]').forEach(function (el) {
             var key = el.getAttribute('data-i18n');
             if (!key) return;
-            el.textContent = t(key);
+            var val = t(key);
+            if (el.tagName === 'OPTION') {
+                el.textContent = val;
+            } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                /* metin alanlarına data-i18n konmaz */
+            } else {
+                el.textContent = val;
+            }
         });
         document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
             var key = el.getAttribute('data-i18n-title');
@@ -1800,8 +1996,14 @@ function applyI18n() {
         });
         var trBtn = document.getElementById('langTR');
         var enBtn = document.getElementById('langEN');
-        if (trBtn) trBtn.classList.toggle('active', appLang === 'tr');
-        if (enBtn) enBtn.classList.toggle('active', appLang === 'en');
+        if (trBtn) {
+            trBtn.classList.toggle('active', appLang === 'tr');
+            trBtn.setAttribute('aria-pressed', appLang === 'tr' ? 'true' : 'false');
+        }
+        if (enBtn) {
+            enBtn.classList.toggle('active', appLang === 'en');
+            enBtn.setAttribute('aria-pressed', appLang === 'en' ? 'true' : 'false');
+        }
         document.title = appLang === 'en' ? 'CV Maker' : 'CV Hazırlama Programı';
     } catch (e) {
         console.error('applyI18n:', e);
@@ -1812,9 +2014,22 @@ function setLang(lang) {
     try {
         appLang = (lang === 'en') ? 'en' : 'tr';
         try { localStorage.setItem(LANG_KEY, appLang); } catch (e0) { /* ignore */ }
+        // Önce dinamik formlar (t() kullanır), sonra statik data-i18n
+        try {
+            if (typeof renderEditExperience === 'function') renderEditExperience();
+            if (typeof renderEditEducation === 'function') renderEditEducation();
+            if (typeof renderEditList === 'function') {
+                renderEditList('skills');
+                renderEditList('systems');
+                renderEditList('technical');
+            }
+            if (typeof renderEditSidebarSections === 'function') renderEditSidebarSections();
+            if (typeof refreshComputedFields === 'function') refreshComputedFields();
+            if (typeof applyToPreview === 'function') applyToPreview();
+        } catch (e1) {
+            console.warn('setLang refresh:', e1);
+        }
         applyI18n();
-        // Önizleme kişisel etiketlerini yenile
-        try { if (typeof applyToPreview === 'function') applyToPreview(); } catch (e1) { /* ignore */ }
         showStatus(t('status_lang'));
     } catch (e) {
         console.error('setLang:', e);
@@ -2150,7 +2365,13 @@ function safeRich(str) {
 
 /* ---------- Tarih yardımcıları ---------- */
 var TR_MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
-var TR_MONTHS_LOWER = TR_MONTHS.map(function (m) { return m.toLowerCase(); });
+var EN_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+var ALL_MONTHS_LOWER = TR_MONTHS.concat(EN_MONTHS).map(function (m) { return m.toLowerCase(); });
+var ALL_MONTHS_INDEX = TR_MONTHS.map(function (_, i) { return i; }).concat(EN_MONTHS.map(function (_, i) { return i; }));
+
+function monthNames() {
+    return (appLang === 'en') ? EN_MONTHS : TR_MONTHS;
+}
 
 function parseMonthYear(str) {
     try {
@@ -2160,11 +2381,15 @@ function parseMonthYear(str) {
         if (/^\d{4}-\d{2}$/.test(str)) return str;
         // YYYY
         if (/^\d{4}$/.test(str)) return str + '-01';
-        // "Ağustos 2025" veya "Agustos 2025"
+        // "Ağustos 2025" / "August 2025"
         var m = str.match(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s+(\d{4})/i);
         if (m) {
-            var mi = TR_MONTHS_LOWER.indexOf(m[1].toLowerCase());
-            if (mi >= 0) return m[2] + '-' + String(mi + 1).padStart(2, '0');
+            var low = m[1].toLowerCase();
+            var mi = ALL_MONTHS_LOWER.indexOf(low);
+            if (mi >= 0) {
+                var monthIdx = ALL_MONTHS_INDEX[mi];
+                return m[2] + '-' + String(monthIdx + 1).padStart(2, '0');
+            }
         }
         // 08.2025 or 08/2025
         var m2 = str.match(/(\d{1,2})[./](\d{4})/);
@@ -2182,7 +2407,8 @@ function formatMonthYear(ym) {
         if (p.length < 2) return ym;
         var year = p[0];
         var month = parseInt(p[1], 10);
-        if (month >= 1 && month <= 12) return TR_MONTHS[month - 1] + ' ' + year;
+        var names = monthNames();
+        if (month >= 1 && month <= 12) return names[month - 1] + ' ' + year;
         return year;
     } catch (e) {
         return ym || '';
@@ -2232,10 +2458,12 @@ function formatDuration(months) {
         if (months === null || months === undefined) return '';
         var y = Math.floor(months / 12);
         var m = months % 12;
-        if (y > 0 && m > 0) return y + ' Yıl ' + m + ' Ay';
-        if (y > 0) return y + ' Yıl';
-        if (m > 0) return m + ' Ay';
-        return '1 Ay';
+        var uy = y === 1 ? t('unit_year') : t('unit_years');
+        var um = m === 1 ? t('unit_month') : t('unit_months');
+        if (y > 0 && m > 0) return y + ' ' + uy + ' ' + m + ' ' + um;
+        if (y > 0) return y + ' ' + uy;
+        if (m > 0) return m + ' ' + um;
+        return '1 ' + t('unit_month');
     } catch (e) {
         return '';
     }
@@ -2246,7 +2474,7 @@ function buildBirthDisplay(birthDate) {
         if (!birthDate) return '';
         var year = String(birthDate).slice(0, 4);
         var age = calcAge(birthDate);
-        if (age !== null) return '📅 ' + year + ' (' + age + ' Yaş)';
+        if (age !== null) return '📅 ' + year + ' (' + age + ' ' + t('unit_age') + ')';
         return '📅 ' + year;
     } catch (e) {
         return birthDate || '';
@@ -2257,7 +2485,7 @@ function buildRoleDateLine(exp) {
     try {
         var role = exp.role || '';
         var start = formatMonthYear(exp.startDate);
-        var end = exp.isCurrent ? 'Devam ediyor' : formatMonthYear(exp.endDate);
+        var end = exp.isCurrent ? t('txt_present') : formatMonthYear(exp.endDate);
         var dur = formatDuration(calcDurationMonths(exp.startDate, exp.isCurrent ? null : exp.endDate));
         var range = '';
         if (start && end) range = start + ' – ' + end;
@@ -2277,7 +2505,10 @@ function buildEducationYears(edu) {
             var a = parseInt(edu.startYear, 10);
             var b = parseInt(edu.endYear, 10);
             var span = '';
-            if (!isNaN(a) && !isNaN(b) && b >= a) span = ' (' + (b - a) + ' Yıl)';
+            if (!isNaN(a) && !isNaN(b) && b >= a) {
+                var dy = b - a;
+                span = ' (' + dy + ' ' + (dy === 1 ? t('unit_year') : t('unit_years')) + ')';
+            }
             return edu.startYear + ' – ' + edu.endYear + span;
         }
         if (edu.years) return edu.years;
@@ -2354,7 +2585,7 @@ function refreshComputedFields() {
         var ageEl = document.getElementById('ageDisplay');
         if (ageEl) {
             var age = calcAge(cvData.contact.birthDate);
-            ageEl.textContent = age !== null ? ('Yaş: ' + age) : (cvData.contact.birthDate ? '' : 'Tarih seçilmedi');
+            ageEl.textContent = age !== null ? (t('txt_age_label') + ': ' + age) : (cvData.contact.birthDate ? '' : t('txt_no_date'));
         }
         // Deneyim roleDate satırları
         (cvData.experience || []).forEach(function (exp) {
@@ -3537,7 +3768,8 @@ function renderSidebarDynamic() {
         var html = '';
         (cvData.sidebarSections || []).forEach(function (sec) {
             if (sec.visible === false) return;
-            var title = escapeHtml(sec.title || 'Bölüm');
+            var i18nKey = builtinSectionI18nKey(sec.id);
+            var title = escapeHtml(i18nKey ? t(i18nKey) : (sec.title || t('lbl_heading')));
             html += '<h2>' + title + '</h2>';
             if (sec.type === 'contact') {
                 html += '<p>' + escapeHtml(cvData.contact.location || '') + '</p>';
@@ -3579,10 +3811,10 @@ function sectionToolsHtml(idx, sec, total) {
     var isCustom = sec.type === 'custom';
     var vis = sec.visible !== false;
     return '' +
-        '<button type="button" class="btn btn-secondary btn-sm" title="Yukarı" onclick="event.stopPropagation();moveSidebarSection(' + idx + ',-1)" ' + (idx === 0 ? 'disabled' : '') + '>↑</button>' +
-        '<button type="button" class="btn btn-secondary btn-sm" title="Aşağı" onclick="event.stopPropagation();moveSidebarSection(' + idx + ',1)" ' + (idx >= total - 1 ? 'disabled' : '') + '>↓</button>' +
-        '<button type="button" class="btn btn-secondary btn-sm" title="' + (vis ? 'Gizle' : 'Göster') + '" onclick="event.stopPropagation();toggleSidebarSection(' + idx + ')">' + (vis ? '🚫' : '👁') + '</button>' +
-        (isCustom ? '<button type="button" class="btn btn-danger btn-sm" title="Sil" onclick="event.stopPropagation();removeSidebarSection(' + idx + ')">🗑</button>' : '');
+        '<button type="button" class="btn btn-secondary btn-sm" title="↑" onclick="event.stopPropagation();moveSidebarSection(' + idx + ',-1)" ' + (idx === 0 ? 'disabled' : '') + '>↑</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm" title="↓" onclick="event.stopPropagation();moveSidebarSection(' + idx + ',1)" ' + (idx >= total - 1 ? 'disabled' : '') + '>↓</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm" title="' + escapeHtml(vis ? t('btn_hide') : t('btn_show')) + '" onclick="event.stopPropagation();toggleSidebarSection(' + idx + ')">' + (vis ? '🚫' : '👁') + '</button>' +
+        (isCustom ? '<button type="button" class="btn btn-danger btn-sm" title="' + escapeHtml(t('btn_delete')) + '" onclick="event.stopPropagation();removeSidebarSection(' + idx + ')">🗑</button>' : '');
 }
 
 function uniqueStrings(arr) {
@@ -3673,7 +3905,7 @@ function renderEditSidebarSections() {
                 '<span class="acc-tools" data-sid-tools="' + escapeHtml(sec.id) + '"></span>' +
                 '<span class="acc-chevron">▶</span></div>' +
                 '<div class="acc-body">' +
-                '<div class="form-group"><label>Başlık adı</label>' +
+                '<div class="form-group"><label>' + escapeHtml(t('lbl_section_title')) + '</label>' +
                 '<input type="text" data-field="customTitle" data-sid="' + escapeHtml(sec.id) + '" value="' + escapeHtml(sec.title || '') + '"></div>' +
                 '<div>' + itemsHtml + '</div>' +
                 '<button type="button" class="btn btn-secondary btn-sm section-add" onclick="addCustomItem(\'' + escapeHtml(sec.id) + '\')">+ Madde Ekle</button>' +
@@ -3693,9 +3925,14 @@ function renderEditSidebarSections() {
             if (el) {
                 panel.appendChild(el);
                 el.classList.toggle('sec-hidden', sec.visible === false);
-                if (sec.type !== 'custom') {
-                    var titleEl = el.querySelector('[data-sid-title]');
-                    if (titleEl && sec.title) titleEl.textContent = sec.title;
+                var titleEl = el.querySelector('[data-sid-title]');
+                if (titleEl) {
+                    if (sec.type === 'custom') {
+                        titleEl.textContent = sec.title || t('lbl_heading');
+                    } else {
+                        var k = builtinSectionI18nKey(sec.id);
+                        if (k) titleEl.textContent = t(k);
+                    }
                 }
             }
         });
@@ -3765,7 +4002,7 @@ function addCustomItem(secId) {
         collectSidebarSectionsFromForm();
         if (!cvData.customSections) cvData.customSections = {};
         if (!cvData.customSections[secId]) cvData.customSections[secId] = [];
-        cvData.customSections[secId].push('Yeni madde');
+        cvData.customSections[secId].push(t('txt_new_bullet'));
         renderEditSidebarSections();
         saveCV();
     } catch (e) {
@@ -3987,7 +4224,7 @@ function renderEditExperience() {
                 return '<div class="bullet-row">' +
                     '<div class="field-with-expand" style="flex:1">' +
                     '<textarea data-field="bullet" rows="3" id="bullet_' + bIdx + '">' + escapeHtml(stripHtml(b)) + '</textarea>' +
-                    '<button type="button" class="btn-expand" title="Tam ekran" onclick="openFullEditor(\'Madde ' + (bIdx + 1) + '\', document.getElementById(\'bullet_' + bIdx + '\'), null)">⛶</button>' +
+                    '<button type="button" class="btn-expand" title="' + escapeHtml(t('title_fullscreen')) + '" onclick="openFullEditor(\'' + escapeHtml(t('txt_bullet')) + ' ' + (bIdx + 1) + '\', document.getElementById(\'bullet_' + bIdx + '\'), null)">⛶</button>' +
                     '</div>' +
                     '<button type="button" class="btn btn-danger btn-sm" onclick="removeBullet(' + bIdx + ')">×</button>' +
                     '</div>';
@@ -3997,31 +4234,31 @@ function renderEditExperience() {
             var durText = formatDuration(calcDurationMonths(exp.startDate, exp.isCurrent ? null : exp.endDate));
             wrap.innerHTML =
                 '<div class="exp-detail-back">' +
-                '<button type="button" class="btn btn-secondary btn-sm" onclick="closeExpDetail()">← Listeye Dön</button>' +
+                '<button type="button" class="btn btn-secondary btn-sm" onclick="closeExpDetail()">' + escapeHtml(t('btn_back_list')) + '</button>' +
                 '</div>' +
                 '<div class="card">' +
-                '<div class="form-group"><label>Şirket</label>' +
+                '<div class="form-group"><label>' + escapeHtml(t('lbl_company')) + '</label>' +
                 '<input type="text" data-field="company" value="' + escapeHtml(stripHtml(exp.company)) + '"></div>' +
-                '<div class="form-group"><label>Pozisyon / Ünvan</label>' +
+                '<div class="form-group"><label>' + escapeHtml(t('lbl_role')) + '</label>' +
                 '<input type="text" data-field="role" value="' + escapeHtml(stripHtml(exp.role || '')) + '"></div>' +
                 '<div class="form-row">' +
-                '<div class="form-group"><label>Başlangıç</label>' +
+                '<div class="form-group"><label>' + escapeHtml(t('lbl_start')) + '</label>' +
                 '<input type="month" data-field="startDate" value="' + escapeHtml(exp.startDate || '') + '"></div>' +
-                '<div class="form-group"><label>Bitiş</label>' +
+                '<div class="form-group"><label>' + escapeHtml(t('lbl_end')) + '</label>' +
                 '<input type="month" data-field="endDate" id="expEndDate" value="' + escapeHtml(exp.endDate || '') + '" ' + (exp.isCurrent ? 'disabled' : '') + '></div>' +
                 '</div>' +
                 '<div class="form-group" style="display:flex;align-items:center;gap:8px;">' +
                 '<input type="checkbox" data-field="isCurrent" id="expIsCurrent" ' + (exp.isCurrent ? 'checked' : '') + ' style="width:20px;height:20px;">' +
-                '<label for="expIsCurrent" style="margin:0;font-size:13px;">Hâlâ çalışıyorum</label>' +
+                '<label for="expIsCurrent" style="margin:0;font-size:13px;">' + escapeHtml(t('lbl_still_working')) + '</label>' +
                 '</div>' +
                 '<div id="expDurationDisplay" style="font-size:13px;color:#0284c7;font-weight:600;margin-bottom:10px;">' +
-                (durText ? ('Süre: ' + durText) : 'Tarih seçince süre hesaplanır') +
+                (durText ? (escapeHtml(t('txt_duration')) + ': ' + escapeHtml(durText)) : escapeHtml(t('txt_duration_hint'))) +
                 '</div>' +
-                '<label style="font-size:12px;font-weight:600;color:#64748b">Maddeler</label>' +
+                '<label style="font-size:12px;font-weight:600;color:#64748b">' + escapeHtml(t('lbl_bullets')) + '</label>' +
                 '<div class="bullet-list">' + bulletsHtml + '</div>' +
                 '<div class="card-actions">' +
-                '<button type="button" class="btn btn-secondary btn-sm" onclick="addBullet()">+ Madde</button>' +
-                '<button type="button" class="btn btn-danger btn-sm" onclick="removeExperience(' + idx + ')">Bu Deneyimi Sil</button>' +
+                '<button type="button" class="btn btn-secondary btn-sm" onclick="addBullet()">' + escapeHtml(t('btn_add_bullet_short')) + '</button>' +
+                '<button type="button" class="btn btn-danger btn-sm" onclick="removeExperience(' + idx + ')">' + escapeHtml(t('btn_delete_exp')) + '</button>' +
                 '</div></div>';
             container.appendChild(wrap);
             bindEditorInputs(container);
@@ -4039,7 +4276,7 @@ function renderEditExperience() {
             var line = buildRoleDateLine(exp);
             row.innerHTML =
                 '<div class="exp-info">' +
-                '<div class="exp-company">' + escapeHtml(stripHtml(exp.company) || 'Şirket adı yok') + '</div>' +
+                '<div class="exp-company">' + escapeHtml(stripHtml(exp.company) || t('txt_no_company')) + '</div>' +
                 '<div class="exp-role">' + escapeHtml(line || '') + '</div>' +
                 '</div>' +
                 '<div style="display:flex;gap:4px;align-items:center">' +
@@ -4169,27 +4406,27 @@ function renderEditEducation() {
             var did = 'edu_degree_' + idx;
             var yearsLine = buildEducationYears(edu);
             card.innerHTML =
-                '<div class="form-group"><label>Okul</label>' +
+                '<div class="form-group"><label>' + escapeHtml(t('lbl_school')) + '</label>' +
                 '<div class="field-with-expand">' +
                 '<input type="text" id="' + sid + '" data-field="school" value="' + escapeHtml(stripHtml(edu.school)) + '">' +
-                '<button type="button" class="btn-expand" title="Tam ekran" onclick="openFullEditor(\'Okul\', document.getElementById(\'' + sid + '\'), null)">⛶</button>' +
+                '<button type="button" class="btn-expand" title="' + escapeHtml(t('title_fullscreen')) + '" onclick="openFullEditor(\'' + escapeHtml(t('lbl_school')) + '\', document.getElementById(\'' + sid + '\'), null)">⛶</button>' +
                 '</div></div>' +
-                '<div class="form-group"><label>Bölüm / Derece</label>' +
+                '<div class="form-group"><label>' + escapeHtml(t('lbl_degree')) + '</label>' +
                 '<div class="field-with-expand">' +
                 '<input type="text" id="' + did + '" data-field="degree" value="' + escapeHtml(stripHtml(edu.degree)) + '">' +
-                '<button type="button" class="btn-expand" title="Tam ekran" onclick="openFullEditor(\'Bölüm / Derece\', document.getElementById(\'' + did + '\'), null)">⛶</button>' +
+                '<button type="button" class="btn-expand" title="' + escapeHtml(t('title_fullscreen')) + '" onclick="openFullEditor(\'' + escapeHtml(t('lbl_degree')) + '\', document.getElementById(\'' + did + '\'), null)">⛶</button>' +
                 '</div></div>' +
                 '<div class="form-row">' +
-                '<div class="form-group"><label>Başlangıç yılı</label>' +
+                '<div class="form-group"><label>' + escapeHtml(t('lbl_start_year')) + '</label>' +
                 '<input type="number" data-field="startYear" min="1950" max="2100" placeholder="1995" value="' + escapeHtml(edu.startYear || '') + '"></div>' +
-                '<div class="form-group"><label>Bitiş yılı</label>' +
+                '<div class="form-group"><label>' + escapeHtml(t('lbl_end_year')) + '</label>' +
                 '<input type="number" data-field="endYear" min="1950" max="2100" placeholder="2000" value="' + escapeHtml(edu.endYear || '') + '"></div>' +
                 '</div>' +
                 '<div style="font-size:13px;color:#0284c7;font-weight:600;margin-bottom:8px;">' +
-                (yearsLine ? ('Süre: ' + yearsLine) : 'Yılları girince süre hesaplanır') +
+                (yearsLine ? (escapeHtml(t('txt_duration')) + ': ' + escapeHtml(yearsLine)) : escapeHtml(t('txt_edu_duration_hint'))) +
                 '</div>' +
                 '<div class="card-actions">' +
-                '<button type="button" class="btn btn-danger btn-sm" onclick="removeEducation(' + idx + ')">Sil</button>' +
+                '<button type="button" class="btn btn-danger btn-sm" onclick="removeEducation(' + idx + ')">' + escapeHtml(t('btn_delete')) + '</button>' +
                 '</div>';
             container.appendChild(card);
         });
@@ -4228,10 +4465,10 @@ function removeEducation(idx) {
 
 /* ---------- Liste edit (skills / systems / technical) ---------- */
 function listTypeTitle(type) {
-    if (type === 'skills') return 'Yetkinlik';
-    if (type === 'systems') return 'Sistem';
-    if (type === 'technical') return 'Teknik';
-    return 'Madde';
+    if (type === 'skills') return t('type_skill');
+    if (type === 'systems') return t('type_system');
+    if (type === 'technical') return t('type_technical');
+    return t('type_item');
 }
 
 function renderEditList(type) {
@@ -4333,8 +4570,8 @@ function bindExpDateListeners(root) {
                 var months = calcDurationMonths(s, e);
                 if (durEl) {
                     durEl.textContent = months !== null && s
-                        ? ('Süre: ' + formatDuration(months) + (isCur ? ' (devam ediyor)' : ''))
-                        : 'Tarih seçince süre hesaplanır';
+                        ? (t('txt_duration') + ': ' + formatDuration(months) + (isCur ? ' (' + t('txt_present') + ')' : ''))
+                        : t('txt_duration_hint');
                 }
             } catch (err) {
                 console.error(err);

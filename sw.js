@@ -1,7 +1,7 @@
 /* CV Maker – offline service worker
    İlk yüklemede uygulama kabuğunu cache'ler; sonra offline açılır.
 */
-var CACHE = 'cv-app-v3';
+var CACHE = 'cv-app-v4';
 var SHELL = [
   './',
   './index.html',
