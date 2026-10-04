@@ -9,6 +9,14 @@ Mobil öncelikli **CV hazırlama** programı (PWA).
 
 ---
 
+## Neden yaptım?
+
+Kendi özgeçmişimi telefonda düzenleyip temiz bir A4 PDF almak için geliştirdim. Mobil, çevrimdışı ve sade bir araç ararken ihtiyacıma uyan hazır bir çözüm bulamayınca kendim yazdım ve başkaları da ücretsiz kullanabilsin diye **MIT lisansı** ile paylaştım.
+
+Verileriniz cihazınızda kalır — sunucuya gönderilmez. Bu bir kişisel / öğrenme projesidir; ticari bir ürün değildir.
+
+---
+
 ## Özellikler
 
 | Alan | Ne sunar |

@@ -9,6 +9,14 @@ Edit your resume, preview A4 layout, export PDF — works offline after first lo
 
 ---
 
+## Why this project?
+
+I built this to edit my own CV on a phone and export a clean A4 PDF offline. I couldn’t find a simple tool that fit that need, so I wrote one and released it under the **MIT License** so others can use it freely.
+
+Your data stays on your device — nothing is uploaded to a server. This is a personal / learning project, not a commercial product.
+
+---
+
 ## Features
 
 | Area | What you get |
