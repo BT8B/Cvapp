@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CV Hazırlama Programı</title>
     <link rel="manifest" href="manifest.webmanifest">
-    <meta name="theme-color" content="#1e293b">
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f8fafc">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="CV">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="CV Maker">
     <link rel="icon" type="image/png" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,50 +25,117 @@
             --text-muted: #475569;
             --text-light: #e2e8f0;
             --border-color: #334155;
-            --app-bg: #f1f5f9;
+            --app-bg: #eef2f7;
             --card-bg: #ffffff;
             --danger: #dc2626;
+            --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
             --cv-font: 'Inter', 'Segoe UI', system-ui, sans-serif;
             --cv-base: 11.2px;
             --cv-line: 1.42;
+            --header-h: 56px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow-card: 0 2px 8px rgba(15, 23, 42, 0.06), 0 0 1px rgba(15, 23, 42, 0.08);
+            --shadow-bar: 0 -4px 24px rgba(15, 23, 42, 0.08);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html { height: 100%; }
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, 'Inter', sans-serif;
             background: var(--app-bg);
             color: #334155;
-            font-size: 14px;
-            line-height: 1.4;
-            padding-bottom: calc(64px + var(--safe-bottom));
+            font-size: 15px;
+            line-height: 1.45;
+            padding-top: calc(var(--header-h) + var(--safe-top));
+            padding-bottom: calc(72px + var(--safe-bottom));
+            min-height: 100%;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* ===== ÜST SEKMELER ===== */
-        .app-tabs {
-            position: sticky;
-            top: 0;
+        /* ===== UYGULAMA ÜST BAR ===== */
+        .app-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
             z-index: 100;
+            padding-top: var(--safe-top);
+            background: rgba(255, 255, 255, 0.86);
+            backdrop-filter: saturate(180%) blur(16px);
+            -webkit-backdrop-filter: saturate(180%) blur(16px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+        }
+        .app-header-inner {
             display: flex;
-            background: #fff;
-            border-bottom: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            align-items: center;
+            gap: 10px;
+            min-height: var(--header-h);
+            padding: 6px 12px 8px;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .app-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .app-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: linear-gradient(145deg, #0284c7, #0f172a);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+        }
+        .app-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+        @media (max-width: 380px) {
+            .app-name { display: none; }
+        }
+
+        /* Segment: Düzenle / Önizle */
+        .app-tabs {
+            flex: 1;
+            display: flex;
+            background: #e8eef5;
+            border-radius: 12px;
+            padding: 3px;
+            gap: 2px;
+            min-width: 0;
+            box-shadow: none;
+            border: none;
+            position: static;
         }
         .app-tabs button {
             flex: 1;
-            padding: 14px 8px;
+            padding: 9px 6px;
             border: none;
             background: transparent;
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 600;
             color: #64748b;
             cursor: pointer;
-            border-bottom: 3px solid transparent;
-            min-height: 48px;
+            border-radius: 10px;
+            min-height: 36px;
+            border-bottom: none;
+            transition: background 0.15s, color 0.15s, box-shadow 0.15s;
         }
         .app-tabs button.active {
-            color: var(--accent-dark);
-            border-bottom-color: var(--accent-dark);
+            color: var(--text-main);
+            background: #fff;
+            border-bottom-color: transparent;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
         }
 
         /* ===== GÖRÜNÜM SWITCH ===== */
@@ -81,24 +150,25 @@
         }
         .acc-item {
             background: var(--card-bg);
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             margin-bottom: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            box-shadow: var(--shadow-card);
             overflow: hidden;
+            border: 1px solid rgba(226, 232, 240, 0.8);
         }
         .acc-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 14px;
+            padding: 15px 14px;
             cursor: pointer;
-            min-height: 48px;
+            min-height: 52px;
             user-select: none;
             font-weight: 600;
             color: var(--text-main);
             gap: 8px;
         }
-        .acc-header:active { background: #f8fafc; }
+        .acc-header:active { background: #f1f5f9; }
         .acc-header .acc-title { flex: 1; min-width: 0; }
         .acc-header .acc-count {
             font-size: 12px;
@@ -275,21 +345,26 @@
             gap: 4px;
             padding: 10px 14px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             min-height: 44px;
             font-family: inherit;
+            transition: transform 0.1s, background 0.15s, opacity 0.15s;
         }
-        .btn-primary { background: var(--accent-dark); color: #fff; }
-        .btn-primary:active { background: #0369a1; }
-        .btn-secondary { background: #e2e8f0; color: #334155; }
-        .btn-secondary:active { background: #cbd5e1; }
+        .btn-primary {
+            background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.28);
+        }
+        .btn-primary:active { background: #0369a1; transform: scale(0.98); }
+        .btn-secondary { background: #e8eef5; color: #334155; }
+        .btn-secondary:active { background: #d6dee9; transform: scale(0.98); }
         .btn-danger { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
         .btn-danger:active { background: #fee2e2; }
-        .btn-sm { padding: 6px 10px; min-height: 36px; font-size: 12px; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-sm { padding: 6px 10px; min-height: 36px; font-size: 12px; border-radius: 10px; }
+        .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
         /* Kart (deneyim / eğitim) */
         .card {
@@ -434,18 +509,56 @@
         .cv-scale-box .cv-container { margin: 0; transform-origin: top left; }
         .zoom-bar {
             position: sticky;
-            top: 48px;
+            top: calc(var(--header-h) + var(--safe-top));
             z-index: 60;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 6px 10px;
-            background: rgba(255,255,255,0.96);
-            border-bottom: 1px solid #e2e8f0;
+            gap: 0;
+            padding: 10px 12px 8px;
+            background: transparent;
+            border-bottom: none;
         }
-        .zoom-bar .btn { min-height: 38px; min-width: 44px; font-size: 16px; padding: 4px 12px; }
-        .zoom-bar .zoom-label { min-width: 52px; text-align: center; font-weight: 600; color: #0284c7; font-size: 14px; }
+        .zoom-bar-inner {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 999px;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(226, 232, 240, 0.9);
+        }
+        .zoom-bar .btn {
+            min-height: 36px;
+            min-width: 40px;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: transparent;
+            color: #0f172a;
+            box-shadow: none;
+        }
+        .zoom-bar .btn:active { background: #e8eef5; }
+        .zoom-bar .btn-fit {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0284c7;
+            padding: 4px 14px;
+            background: #e0f2fe;
+        }
+        .zoom-bar .btn-fit:active { background: #bae6fd; }
+        .zoom-bar .zoom-label {
+            min-width: 48px;
+            text-align: center;
+            font-weight: 700;
+            color: #0284c7;
+            font-size: 13px;
+            letter-spacing: -0.02em;
+            padding: 0 4px;
+        }
         body.pdf-exporting .cv-scale-box { width: 794px !important; height: auto !important; margin: 0 !important; }
         .cv-container {
             width: 794px;
@@ -686,59 +799,129 @@
             color: var(--accent-dark);
         }
 
-        /* ===== ALT BAR ===== */
+        /* ===== ALT DOCK ===== */
         .bottom-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
             z-index: 100;
             display: flex;
             gap: 6px;
-            padding: 8px 10px calc(8px + var(--safe-bottom));
-            background: #fff;
-            border-top: 1px solid #e2e8f0;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+            padding: 8px 10px calc(10px + var(--safe-bottom));
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: saturate(180%) blur(16px);
+            -webkit-backdrop-filter: saturate(180%) blur(16px);
+            border-top: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: var(--shadow-bar);
         }
-        .bottom-bar .btn { flex: 1; font-size: 12px; padding: 10px 6px; }
+        .bottom-bar .btn {
+            flex: 1;
+            font-size: 11px;
+            padding: 8px 4px;
+            flex-direction: column;
+            gap: 2px;
+            border-radius: 14px;
+            min-height: 52px;
+            line-height: 1.15;
+        }
+        .bottom-bar .btn .bb-ico {
+            font-size: 18px;
+            line-height: 1;
+        }
+        .bottom-bar .btn .bb-lbl {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            opacity: 0.92;
+        }
+        .bottom-bar .btn.bb-compact {
+            flex: 0.6;
+            min-width: 52px;
+        }
+        /* Geri / İleri renkli */
+        .bottom-bar .btn.bb-undo {
+            background: linear-gradient(180deg, #fef3c7, #fde68a);
+            color: #92400e;
+            box-shadow: 0 1px 4px rgba(245, 158, 11, 0.25);
+        }
+        .bottom-bar .btn.bb-undo:active { background: #fcd34d; }
+        .bottom-bar .btn.bb-undo:disabled {
+            background: #f1f5f9;
+            color: #94a3b8;
+            box-shadow: none;
+        }
+        .bottom-bar .btn.bb-redo {
+            background: linear-gradient(180deg, #ccfbf1, #99f6e4);
+            color: #0f766e;
+            box-shadow: 0 1px 4px rgba(20, 184, 166, 0.25);
+        }
+        .bottom-bar .btn.bb-redo:active { background: #5eead4; }
+        .bottom-bar .btn.bb-redo:disabled {
+            background: #f1f5f9;
+            color: #94a3b8;
+            box-shadow: none;
+        }
+        .bottom-bar .btn.bb-save {
+            background: linear-gradient(180deg, #34d399, #10b981);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        .bottom-bar .btn.bb-save:active { background: #059669; }
+        .bottom-bar .btn.bb-pdf {
+            background: linear-gradient(180deg, #38bdf8, #0284c7);
+        }
+        .bottom-bar .btn.bb-text {
+            background: linear-gradient(180deg, #818cf8, #6366f1);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+        .bottom-bar .btn.bb-text:active { background: #4f46e5; }
         .status-toast {
             position: fixed;
-            top: 56px; left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
+            top: calc(var(--header-h) + var(--safe-top) + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-6px);
+            background: rgba(15, 23, 42, 0.94);
             color: #fff;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 10px 18px;
+            border-radius: 999px;
             font-size: 13px;
+            font-weight: 500;
             z-index: 200;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, transform 0.2s;
             white-space: nowrap;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25);
+            max-width: calc(100vw - 32px);
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .status-toast.show { opacity: 1; }
-        .status-toast.error { background: var(--danger); }
+        .status-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .status-toast.error { background: rgba(220, 38, 38, 0.95); }
 
         /* FAB – sidebar başlık ekle */
         .fab-add {
             position: fixed;
-            right: 16px;
-            bottom: calc(72px + var(--safe-bottom));
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
+            right: 18px;
+            bottom: calc(84px + var(--safe-bottom));
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
             border: none;
-            background: #f97316;
+            background: linear-gradient(145deg, #fb923c, #ea580c);
             color: #fff;
-            font-size: 28px;
+            font-size: 30px;
             font-weight: 300;
             line-height: 1;
-            box-shadow: 0 4px 14px rgba(249, 115, 22, 0.45);
+            box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
             z-index: 120;
             cursor: pointer;
             display: none;
             align-items: center;
             justify-content: center;
         }
-        .fab-add:active { transform: scale(0.94); background: #ea580c; }
+        .fab-add:active { transform: scale(0.94); }
         body.view-edit .fab-add { display: flex; }
         @media print {
             .fab-add { display: none !important; }
@@ -785,35 +968,46 @@
             font-family: inherit;
         }
 
-        /* Düzenle alt sekmeler */
+        /* Düzenle alt sekmeler – chip segment */
         .edit-subtabs {
             display: flex;
             position: sticky;
-            top: 48px;
+            top: calc(var(--header-h) + var(--safe-top));
             z-index: 40;
-            background: #fff;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 0 8px;
-            gap: 4px;
+            background: rgba(238, 242, 247, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: none;
+            padding: 10px 12px 6px;
+            gap: 6px;
         }
         .edit-subtab {
             flex: 1;
             border: none;
-            background: transparent;
-            padding: 12px 8px;
-            font-size: 14px;
+            background: #e2e8f0;
+            padding: 10px 8px;
+            font-size: 13px;
             font-weight: 600;
             color: #64748b;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
-            min-height: 44px;
+            border-bottom: none;
+            min-height: 40px;
+            border-radius: 999px;
+            transition: background 0.15s, color 0.15s, box-shadow 0.15s;
         }
         .edit-subtab.active {
-            color: #0284c7;
-            border-bottom-color: #0284c7;
+            color: #fff;
+            background: linear-gradient(180deg, #0ea5e9, #0284c7);
+            border-bottom-color: transparent;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
         }
         .edit-panel { display: none; }
         .edit-panel.active { display: block; }
+        .editor-wrap {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 8px 12px 24px;
+        }
 
         /* Section modal */
         .sec-modal {
@@ -832,10 +1026,19 @@
             width: 100%;
             max-width: 520px;
             max-height: 88vh;
-            border-radius: 16px 16px 0 0;
+            border-radius: 20px 20px 0 0;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.2);
+        }
+        .sec-modal-card::before {
+            content: '';
+            width: 36px;
+            height: 4px;
+            border-radius: 999px;
+            background: #cbd5e1;
+            margin: 10px auto 0;
+            flex-shrink: 0;
         }
         .sec-modal-header {
             display: flex;
@@ -891,7 +1094,7 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            .zoom-bar, .app-tabs, .bottom-bar, .status-toast, .full-editor, .sec-modal, .fab-add, .edit-subtabs, #editorView { display: none !important; }
+            .zoom-bar, .app-header, .app-tabs, .bottom-bar, .status-toast, .full-editor, .sec-modal, .fab-add, .edit-subtabs, #editorView { display: none !important; }
             #previewView { display: block !important; }
             .preview-wrap { padding: 0 !important; margin: 0 !important; max-width: none !important; overflow: visible !important; display: block !important; }
             .cv-scale-box { width: auto !important; height: auto !important; margin: 0 !important; }
@@ -962,11 +1165,19 @@
 </head>
 <body>
 
-<!-- ÜST SEKMELER -->
-<div class="app-tabs">
-    <button type="button" id="tabEdit" class="active" onclick="switchView('edit')">✏️ Düzenle</button>
-    <button type="button" id="tabPreview" onclick="switchView('preview')">👁️ Önizle</button>
-</div>
+<!-- ÜST BAR (pro mobil) -->
+<header class="app-header">
+    <div class="app-header-inner">
+        <div class="app-brand">
+            <span class="app-logo">CV</span>
+            <span class="app-name">CV Maker</span>
+        </div>
+        <div class="app-tabs">
+            <button type="button" id="tabEdit" class="active" onclick="switchView('edit')">✏️ Düzenle</button>
+            <button type="button" id="tabPreview" onclick="switchView('preview')">👁️ Önizle</button>
+        </div>
+    </div>
+</header>
 
 <div id="statusToast" class="status-toast"></div>
 
@@ -1277,10 +1488,12 @@
 <!-- ========== ÖNİZLE ========== -->
 <div id="previewView" class="view">
     <div class="zoom-bar">
-        <button type="button" class="btn btn-secondary" onclick="zoomPreview(-1)" title="Küçült">−</button>
-        <span class="zoom-label" id="zoomLabel">100%</span>
-        <button type="button" class="btn btn-secondary" onclick="zoomPreview(1)" title="Büyüt">+</button>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="zoomPreview(0)">Sığdır</button>
+        <div class="zoom-bar-inner">
+            <button type="button" class="btn" onclick="zoomPreview(-1)" title="Küçült">−</button>
+            <span class="zoom-label" id="zoomLabel">100%</span>
+            <button type="button" class="btn" onclick="zoomPreview(1)" title="Büyüt">+</button>
+            <button type="button" class="btn btn-fit" onclick="zoomPreview(0)" title="Ekrana sığdır">Sığdır</button>
+        </div>
     </div>
     <div class="preview-wrap">
         <div class="cv-scale-box" id="cvScaleBox">
@@ -1340,13 +1553,23 @@
     </div>
 </div>
 
-<!-- ALT BAR -->
+<!-- ALT DOCK -->
 <div class="bottom-bar">
-    <button type="button" class="btn btn-secondary" id="undoBtn" onclick="undoCV()" disabled title="Geri" style="flex:0.5">↩</button>
-    <button type="button" class="btn btn-secondary" id="redoBtn" onclick="redoCV()" disabled title="İleri" style="flex:0.5">↪</button>
-    <button type="button" class="btn btn-primary" onclick="saveCV()">💾 Kaydet</button>
-    <button type="button" class="btn btn-primary" id="pdfBtn" onclick="downloadPDF()">📄 PDF</button>
-    <button type="button" class="btn btn-primary" id="textPdfBtn" onclick="printCV()" style="flex:1.3">📝 Metin PDF</button>
+    <button type="button" class="btn bb-compact bb-undo" id="undoBtn" onclick="undoCV()" disabled title="Geri">
+        <span class="bb-ico">↩</span><span class="bb-lbl">Geri</span>
+    </button>
+    <button type="button" class="btn bb-compact bb-redo" id="redoBtn" onclick="redoCV()" disabled title="İleri">
+        <span class="bb-ico">↪</span><span class="bb-lbl">İleri</span>
+    </button>
+    <button type="button" class="btn btn-primary bb-save" onclick="saveCV()">
+        <span class="bb-ico">💾</span><span class="bb-lbl">Kaydet</span>
+    </button>
+    <button type="button" class="btn btn-primary bb-pdf" id="pdfBtn" onclick="downloadPDF()">
+        <span class="bb-ico">📄</span><span class="bb-lbl">PDF</span>
+    </button>
+    <button type="button" class="btn btn-primary bb-text" id="textPdfBtn" onclick="printCV()">
+        <span class="bb-ico">📝</span><span class="bb-lbl">Metin</span>
+    </button>
 </div>
 
 <!-- TAM EKRAN METİN DÜZENLEYİCİ -->
